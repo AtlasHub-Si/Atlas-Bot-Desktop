@@ -1,0 +1,18 @@
+{
+  "name": "Atlas Night — V0.6 Candidate",
+  "appearance": "dark",
+  "colors": {
+    "canvas": "#061229",
+    "frame": "#08152B",
+    "sidebar": "#0A1B36",
+    "surface": "#102844",
+    "text": "#F2F8FF",
+    "textMuted": "#9AAFC7",
+    "border": "#23456B",
+    "accent": "#0B6DFF",
+    "accentForeground": "#FFFFFF",
+    "success": "#14CB99",
+    "warning": "#F5B43C",
+    "danger": "#F26685"
+  }
+}

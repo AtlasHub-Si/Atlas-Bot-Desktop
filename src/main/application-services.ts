@@ -3693,7 +3693,8 @@ export async function createApplicationServices({
     throw new Error(`Unsupported analytics platform: ${analyticsPlatform}`);
   }
   performance.mark("openbot:services.remote-desktop");
-  const analyticsEnabled = (app.isPackaged && appVariant === "production") || analyticsCaptureUrl !== null;
+  // AtlasBot sends diagnostics only to an explicit development capture server.
+  const analyticsEnabled = !app.isPackaged && analyticsCaptureUrl !== null;
   const analyticsInstallId = analyticsEnabled
     ? await Effect.runPromise(
         readAnalyticsInstallId(join(app.getPath("userData"), ANALYTICS_INSTALL_ID_FILE), Date.now()),
@@ -4192,6 +4193,7 @@ export async function createApplicationServices({
       existsSync(HOSTED_UPDATE_TRIGGER));
   // A local server is the same application as its parent, which installs the update for both.
   const updatesEnabled =
+    process.env.ATLASBOT_ENABLE_UPDATES === "1" &&
     !localServerChild &&
     app.isPackaged &&
     !isNixStoreInstall() &&

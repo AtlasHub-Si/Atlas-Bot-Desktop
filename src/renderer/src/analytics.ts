@@ -732,7 +732,7 @@ const UPDATE_PHASES = new Set([
 ]);
 
 function shouldEnableDesktopAnalytics(appInfo: AppInfo, productionBuild: boolean): boolean {
-  return appInfo.analyticsCaptureUrl !== undefined || (productionBuild && appInfo.variant === "production");
+  return !productionBuild && appInfo.analyticsCaptureUrl !== undefined;
 }
 
 function sanitizeDesktopAnalyticsEvent(

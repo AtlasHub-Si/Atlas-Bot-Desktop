@@ -1,26 +1,24 @@
-> **AtlasHub.SI project stewardship · [Atlas identity & provenance](ATLAS.md) · [Legal information](LEGAL.md)**  
-> Maintained in the AtlasHub-Si ecosystem; source curation reference: [SergioMonteiro-Atlas](https://github.com/sergiomonteiro-atlas). Original upstream licenses and author notices remain in effect.
+# AtlasBot — Enterprise AI Workspace
 
-# OpenBot
+**ATLAS GLOBAL TECH LTD · [atlas-si.com](https://atlas-si.com)**
 
-[![CI](https://github.com/nightly-labs/openbot/actions/workflows/ci.yml/badge.svg)](https://github.com/nightly-labs/openbot/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/license-PolyForm_Noncommercial_1.0.0-blue.svg)](LICENSE)
+AtlasBot is the desktop multi-agent interface and agent-computer workspace in the [Atlas-Harness](https://github.com/AtlasHub-Si/Atlas-Harness) ecosystem. It brings executive governance, persistent AI teammates and local or joined-server operations into one workspace.
 
-OpenBot is a local-first desktop workspace for persistent AI teammates. It supports the local
-[Codex App Server](https://learn.chatgpt.com/docs/app-server) and
-[Claude Code](https://code.claude.com/docs/en/overview), plus [Grok CLI](https://docs.x.ai/build/overview),
-OpenCode, Gemini, [Cursor CLI](https://cursor.com/cli), [Cline CLI](https://cline.bot/cli), [Kimi Code CLI](https://github.com/MoonshotAI/kimi-cli),
-[Devin CLI](https://cli.devin.ai), [GitHub Copilot CLI](https://github.com/github/copilot-cli), [Mistral Vibe](https://github.com/mistralai/mistral-vibe), and [Hermes Agent](https://hermes-agent.nousresearch.com) through ACP. It gives every agent its own workspace and
-conversation, and provides local queues, file transfers, an embedded browser, and agent-to-agent
-messaging in one desktop app.
+| Architecture | Repository |
+| --- | --- |
+| Harness and ecosystem | [Atlas-Harness](https://github.com/AtlasHub-Si/Atlas-Harness) |
+| Desktop workspace | [Atlas-Bot-Desktop](https://github.com/AtlasHub-Si/Atlas-Bot-Desktop) |
+| Brand reference | [atlas-brand-system](https://github.com/AtlasHub-Si/atlas-brand-system) |
 
-OpenBot is ready for production use. A new release ships almost every day.
+Stewardship: [SergioMonteiro-Atlas](https://github.com/sergiomonteiro-atlas). [Change authorization](docs/atlas/AUTHORIZATION.md) · [Branding status](docs/atlas/BRANDING.md) · [Legal information](LEGAL.md).
 
-> [!WARNING]
-> Agents run with `danger-full-access` and `approvalPolicy: never`. They can read and modify files,
-> run commands, use the network, and control the embedded browser without per-action confirmations
-> after the explicit first-launch consent.
-> Run only agents and tasks you trust, keep backups, and review [Security](#security) before use.
+The AtlasBot display identity is being integrated. Final icons and mascots are still under validation. Existing licenses and required notices remain in [LICENSE](LICENSE) and [NOTICE](NOTICE); this branding change does not relicense inherited code. Default desktop telemetry is disabled. Installed updates are disabled until Atlas releases are validated.
+
+Agents can execute commands and control applications with broad access after first-launch consent. Review the Security section and use trusted tasks.
+
+## Inherited technical reference
+
+The sections below retain original names where they describe existing commands, installation paths, protocols and upstream releases. Upstream installers are not AtlasBot releases. The deleted `Atlas-Bot` repository is not part of the current scope.
 
 ## What works
 

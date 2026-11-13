@@ -1,3 +1,7 @@
+# AtlasBot project scope
+
+Work only on `AtlasHub-Si/Atlas-Bot-Desktop`. The separate `Atlas-Bot` repository was deleted and is not a task target. Public product label: **AtlasBot**. See [authorization](docs/atlas/AUTHORIZATION.md) and [branding integration](docs/atlas/BRANDING.md). Brand assets are still under validation. Keep storage and released protocols compatible.
+
 # Repository guidance
 
 ## Communication

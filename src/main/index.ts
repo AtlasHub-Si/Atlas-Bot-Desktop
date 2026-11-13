@@ -311,7 +311,11 @@ if (commandLineUserDataDirectory) {
     ),
   );
 }
-app.setName("OpenBot");
+// Keep the existing workspace and Chromium profile when the public product name changes.
+if (app.isPackaged && !commandLineUserDataDirectory) {
+  app.setPath("userData", join(app.getPath("appData"), "OpenBot"));
+}
+app.setName("AtlasBot");
 app.enableSandbox();
 if (process.platform === "win32") app.setAppUserModelId("app.openbot.desktop");
 // Linux: on Wayland, Chromium waits until a monitor is on before it starts. With none, start again on
@@ -1132,7 +1136,7 @@ function requestDesktopNotificationPermission(
       preference,
       showWelcome: () => {
         if (!Notification.isSupported()) return;
-        showRetainedNotification(new Notification({ title: "OpenBot", body: translate("notification.welcome") }));
+        showRetainedNotification(new Notification({ title: "AtlasBot", body: translate("notification.welcome") }));
       },
     }),
   );

@@ -8,12 +8,12 @@ export const messages = {
   "mobile.settings.language.system": "Systeemstandaard",
   "mobile.settings.language.footer":
     "Systeemstandaard volgt de eerste taal in de instellingen van je telefoon. Tekst die nog niet is vertaald, wordt in het Engels getoond.",
-  "mobile.settings.language.restartTitle": "OpenBot opnieuw starten?",
+  "mobile.settings.language.restartTitle": "AtlasBot opnieuw starten?",
   "mobile.settings.language.restartBody":
-    "Deze taal lees je in de andere richting. De schermen draaien om wanneer OpenBot opnieuw start. Zien de schermen er na de herstart nog verkeerd uit, sluit OpenBot dan in de appkiezer en open het opnieuw.",
+    "Deze taal lees je in de andere richting. De schermen draaien om wanneer AtlasBot opnieuw start. Zien de schermen er na de herstart nog verkeerd uit, sluit AtlasBot dan in de appkiezer en open het opnieuw.",
   "mobile.settings.language.restartNow": "Nu opnieuw starten",
   "mobile.settings.language.restartFailed":
-    "OpenBot kon niet opnieuw starten. De schermen draaien om wanneer je OpenBot de volgende keer opent.",
+    "AtlasBot kon niet opnieuw starten. De schermen draaien om wanneer je AtlasBot de volgende keer opent.",
   "mobile.settings.dictation.language": "Dicteertaal",
   "mobile.settings.about.development": "Ontwikkeling",
   "mobile.settings.about.openFailed": "Kan de link niet openen. Probeer het opnieuw.",
@@ -22,7 +22,7 @@ export const messages = {
   "mobile.settings.about.privacy": "Privacybeleid",
   "mobile.settings.home.profile": "Profiel",
   "mobile.settings.home.preferences": "Voorkeuren",
-  "mobile.settings.home.about": "Over OpenBot",
+  "mobile.settings.home.about": "Over AtlasBot",
   "mobile.settings.home.support": "Ondersteuning",
   "mobile.settings.home.supportHint": "Krijg hulp en sla een ondersteuningslog op",
   "mobile.settings.home.account": "Account",
@@ -45,7 +45,7 @@ export const messages = {
   "mobile.settings.billing.status.unpaid": "Onbetaald",
   "mobile.settings.billing.status.paused": "Gepauzeerd",
   "mobile.settings.billing.footer":
-    "Open Instellingen → Facturering in OpenBot op je computer om een abonnement of de betaalmethode te wijzigen of facturen te bekijken.",
+    "Open Instellingen → Facturering in AtlasBot op je computer om een abonnement of de betaalmethode te wijzigen of facturen te bekijken.",
   "mobile.settings.support.help": "Hulp krijgen",
   "mobile.settings.support.discord": "Open een ticket op Discord",
   "mobile.settings.support.discordHint": "De snelste weg naar hulp",
@@ -61,7 +61,7 @@ export const messages = {
   "mobile.settings.support.clearTitle": "Ondersteuningslog wissen?",
   "mobile.settings.support.clearBody": "Hiermee verwijder je alle gebeurtenissen uit het log op deze telefoon.",
   "mobile.settings.support.logFooter":
-    "Het log blijft op deze telefoon en OpenBot verstuurt het niet. Het legt verbindingsstappen, verzoeken en fouten vast. Het legt geen berichten of bestanden vast en het maskeert wachtwoorden en tokens. Lees het bestand voordat je het deelt.",
+    "Het log blijft op deze telefoon en AtlasBot verstuurt het niet. Het legt verbindingsstappen, verzoeken en fouten vast. Het legt geen berichten of bestanden vast en het maskeert wachtwoorden en tokens. Lees het bestand voordat je het deelt.",
   "mobile.settings.support.saveFailed": "Kan het logbestand niet opslaan. Probeer het opnieuw.",
   "mobile.settings.support.sharingUnavailable": "Delen is niet beschikbaar op deze telefoon.",
   "mobile.settings.support.newestFirst": "Nieuwste eerst.",
@@ -150,30 +150,30 @@ export const messages = {
   "mobile.settings.feedback.retry": "Opslaan van haptische instelling opnieuw proberen",
   "mobile.settings.liveActivities.title": "Live activiteiten",
   "mobile.settings.liveActivities.footer":
-    "Toont werk van agents, berichten, vragen en goedkeuringen op het toegangsscherm en in het Dynamic Island terwijl OpenBot actief is.",
+    "Toont werk van agents, berichten, vragen en goedkeuringen op het toegangsscherm en in het Dynamic Island terwijl AtlasBot actief is.",
   "mobile.settings.liveActivities.toggle": "Agentactiviteit tonen",
   "mobile.settings.liveActivities.retry": "Opslaan van instelling voor live activiteiten opnieuw proberen",
   "mobile.settings.notifications.title": "Meldingen",
   "mobile.settings.notifications.toggle": "Meldingen toestaan",
   "mobile.settings.notifications.footer":
-    "Agents laten je weten wanneer ze klaar zijn, stoppen met een fout of je invoer, een goedkeuring of een stap in de browser nodig hebben. Er komt niets binnen terwijl OpenBot hier of in de desktop-app in gebruik is. Zolang de live activiteit zichtbaar is, toont die de gebeurtenis in plaats daarvan.",
+    "Agents laten je weten wanneer ze klaar zijn, stoppen met een fout of je invoer, een goedkeuring of een stap in de browser nodig hebben. Er komt niets binnen terwijl AtlasBot hier of in de desktop-app in gebruik is. Zolang de live activiteit zichtbaar is, toont die de gebeurtenis in plaats daarvan.",
   "mobile.settings.notifications.footerAndroid":
-    "Agents laten je weten wanneer ze klaar zijn, stoppen met een fout of je invoer, een goedkeuring of een stap in de browser nodig hebben. Er komt niets binnen terwijl OpenBot hier of in de desktop-app in gebruik is.",
-  "mobile.settings.notifications.denied": "Meldingen voor OpenBot staan uit in iOS-instellingen.",
-  "mobile.settings.notifications.deniedAndroid": "Meldingen voor OpenBot staan uit in Android-instellingen.",
+    "Agents laten je weten wanneer ze klaar zijn, stoppen met een fout of je invoer, een goedkeuring of een stap in de browser nodig hebben. Er komt niets binnen terwijl AtlasBot hier of in de desktop-app in gebruik is.",
+  "mobile.settings.notifications.denied": "Meldingen voor AtlasBot staan uit in iOS-instellingen.",
+  "mobile.settings.notifications.deniedAndroid": "Meldingen voor AtlasBot staan uit in Android-instellingen.",
   "mobile.settings.notifications.openSettings": "Open iOS-instellingen",
   "mobile.settings.notifications.openSettingsAndroid": "Open Android-instellingen",
   "mobile.settings.notifications.preview": "Voorvertoning van antwoord tonen",
   "mobile.settings.notifications.previewFooter":
-    "Toont het begin van een antwoord, een vraag of de actie die je moet goedkeuren. Apple en de accountdienst van OpenBot kunnen dit niet lezen.",
+    "Toont het begin van een antwoord, een vraag of de actie die je moet goedkeuren. Apple en de accountdienst van AtlasBot kunnen dit niet lezen.",
   "mobile.settings.notifications.previewFooterAndroid":
-    "Toont het begin van een antwoord, een vraag of de actie die je moet goedkeuren. Google en de accountdienst van OpenBot kunnen dit niet lezen.",
+    "Toont het begin van een antwoord, een vraag of de actie die je moet goedkeuren. Google en de accountdienst van AtlasBot kunnen dit niet lezen.",
   "mobile.settings.notifications.threadReplies": "Antwoorden in threads",
   "mobile.settings.notifications.threadRepliesFooter":
     "Antwoorden in threads laten je weten wanneer een agent in een thread klaar is of stopt met een fout. Zonder deze meldingen laat een thread je nog steeds weten wanneer je invoer of een goedkeuring nodig is.",
   "mobile.settings.notifications.sound": "Geluid",
   "mobile.settings.notifications.playSound": "Geluid afspelen",
-  "mobile.settings.notifications.sound.openbot": "OpenBot",
+  "mobile.settings.notifications.sound.openbot": "AtlasBot",
   "mobile.settings.notifications.sound.warm": "Warm",
   "mobile.settings.notifications.sound.mech": "Mechanisch",
   "mobile.settings.notifications.sound.bubble": "Bubbelend",
@@ -181,9 +181,9 @@ export const messages = {
   "mobile.settings.notifications.sound.default": "iOS-standaard",
   "mobile.settings.notifications.sound.defaultAndroid": "Android-standaard",
   "mobile.settings.notifications.soundFooter":
-    "Meldingen en de live activiteit spelen dit geluid af. De live activiteit laat ook het scherm oplichten. Het OpenBot-geluid is het geluid dat de desktop-app afspeelt als een taak klaar is. De vier geluiden daarna zijn de geluiden van de geluidsthema’s van de desktop-app.",
+    "Meldingen en de live activiteit spelen dit geluid af. De live activiteit laat ook het scherm oplichten. Het AtlasBot-geluid is het geluid dat de desktop-app afspeelt als een taak klaar is. De vier geluiden daarna zijn de geluiden van de geluidsthema’s van de desktop-app.",
   "mobile.settings.notifications.soundFooterAndroid":
-    "Meldingen spelen dit geluid af. Het OpenBot-geluid is het geluid dat de desktop-app afspeelt als een taak klaar is. De vier geluiden daarna zijn de geluiden van de geluidsthema’s van de desktop-app.",
+    "Meldingen spelen dit geluid af. Het AtlasBot-geluid is het geluid dat de desktop-app afspeelt als een taak klaar is. De vier geluiden daarna zijn de geluiden van de geluidsthema’s van de desktop-app.",
   "mobile.settings.notifications.level.all": "Alle activiteit",
   "mobile.settings.notifications.level.needsMe": "Alleen als het mij nodig heeft",
   "mobile.settings.notifications.level.nothing": "Niets",
@@ -199,7 +199,7 @@ export const messages = {
   "mobile.settings.notifications.serverFooter":
     "De gebeurtenissen van deze server die deze telefoon melden. De desktop-app heeft eigen instellingen.",
   "mobile.settings.notifications.serverUnsupported":
-    "Deze server kan geen meldingen versturen. Werk OpenBot bij op de computer waarop de server draait.",
+    "Deze server kan geen meldingen versturen. Werk AtlasBot bij op de computer waarop de server draait.",
   "mobile.settings.notifications.thisPhone": "Deze telefoon",
   "mobile.settings.notifications.whatYouHear": "Waarover je hoort",
   "mobile.settings.notifications.wholeServer": "Hele server",
@@ -213,7 +213,7 @@ export const messages = {
   "mobile.settings.notifications.chooseAgent": "Kies voor één agent",
   "mobile.settings.notifications.chooseAnotherAgent": "Kies een andere agent",
   "mobile.settings.notifications.levelsFooter": "Tik nog eens op het niveau van een agent om de server te volgen.",
-  "mobile.settings.notifications.agentsUnsupported": "Werk OpenBot bij op deze server om agents te kiezen.",
+  "mobile.settings.notifications.agentsUnsupported": "Werk AtlasBot bij op deze server om agents te kiezen.",
   "mobile.settings.notifications.agentsOffline": "Agents verschijnen als deze server online is.",
   "mobile.settings.notifications.scopeFooter":
     "Je keuzes gelden op al je apparaten. Dempen geldt alleen voor deze telefoon.",
@@ -221,7 +221,7 @@ export const messages = {
   "mobile.settings.notifications.channelSilent": "Agentmeldingen (geen geluid)",
   "mobile.settings.privacy.title": "Privacy",
   "mobile.settings.privacy.footer":
-    "Functiegebruik en verbindingsresultaten van deze telefoon gaan altijd naar de analyse van OpenBot. Aan: met je account-ID en e-mailadres. Uit: alleen met een willekeurige installatie-ID. Berichtinhoud en bestanden worden niet verstuurd.",
+    "Functiegebruik en verbindingsresultaten van deze telefoon gaan altijd naar de analyse van AtlasBot. Aan: met je account-ID en e-mailadres. Uit: alleen met een willekeurige installatie-ID. Berichtinhoud en bestanden worden niet verstuurd.",
   "mobile.settings.privacy.analytics": "Analyse aan mijn account koppelen",
   "mobile.settings.privacy.retry": "Opslaan van privacyinstelling opnieuw proberen",
   "mobile.settings.conversations.title": "Gesprekken",
@@ -248,7 +248,7 @@ export const messages = {
   "mobile.settings.profile.accountSessions": "Accountsessies",
   "mobile.settings.profile.signOutTitle": "Uitloggen?",
   "mobile.settings.profile.signOutBody":
-    "Maak opnieuw verbinding door een nieuwe code te scannen in OpenBot op je desktop.",
+    "Maak opnieuw verbinding door een nieuwe code te scannen in AtlasBot op je desktop.",
   "mobile.settings.profile.signOut": "Uitloggen",
   "mobile.settings.profile.options": "Profielopties",
   "mobile.settings.profile.activity.title": "Activiteit op {server}",
@@ -286,7 +286,7 @@ export const messages = {
   "mobile.settings.profile.models.title": "Modelgebruik",
   "mobile.settings.profile.share": "Delen",
   "mobile.settings.profile.shareTitle": "Deel je activiteit",
-  "mobile.settings.profile.share.caption": "Mijn laatste zes maanden met OpenBot",
+  "mobile.settings.profile.share.caption": "Mijn laatste zes maanden met AtlasBot",
   "mobile.settings.profile.share.createFailed": "Kan de afbeelding niet maken.",
   "mobile.settings.profile.share.fileName": "openbot-activiteit.png",
   "mobile.settings.voice.elevenLabs.keyPlaceholder": "sk_…",
@@ -295,13 +295,13 @@ export const messages = {
   "mobile.settings.voice.pause.title": "Pauze voor verzenden",
   "mobile.settings.voice.pause.label": "Wachten op nieuwe woorden",
   "mobile.settings.voice.pause.footer":
-    "In een spraakgesprek verstuurt OpenBot je woorden als het zo lang geen nieuwe woorden herkent. Geluid zonder woorden houdt het luisteren niet open. Kies een langere pauze als je langzaam spreekt of stopt om na te denken.",
+    "In een spraakgesprek verstuurt AtlasBot je woorden als het zo lang geen nieuwe woorden herkent. Geluid zonder woorden houdt het luisteren niet open. Kies een langere pauze als je langzaam spreekt of stopt om na te denken.",
   "mobile.settings.voice.pause.seconds": "{seconds} s",
   "mobile.settings.voice.speed.title": "Snelheid antwoorden",
-  "mobile.settings.voice.speed.footer": "De snelheid van antwoorden die OpenBot voorleest, ook in een spraakgesprek.",
+  "mobile.settings.voice.speed.footer": "De snelheid van antwoorden die AtlasBot voorleest, ook in een spraakgesprek.",
   "mobile.settings.voice.speed.value": "{speed}×",
   "mobile.settings.voice.elevenLabs.recognitionFooter":
-    "OpenBot streamt je spraak met een eenmalige token naar ElevenLabs, en ElevenLabs brengt het in rekening op je account. De sleutel blijft op deze telefoon.",
+    "AtlasBot streamt je spraak met een eenmalige token naar ElevenLabs, en ElevenLabs brengt het in rekening op je account. De sleutel blijft op deze telefoon.",
   "mobile.settings.voice.elevenLabs.model.title": "Model",
   "mobile.settings.voice.elevenLabs.model.footer":
     "Elk model heeft bij ElevenLabs een eigen prijs. De wijziging geldt vanaf het volgende antwoord.",
@@ -334,9 +334,9 @@ export const messages = {
     "Nieuwe berichten gaan naar het huidige werk van de agent, niet naar de wachtrij. Bij agents die dit niet kunnen, wachten ze in de wachtrij.",
   "mobile.settings.agents.planCardFooter": "Vóór een lange taak toont de agent zijn plan.",
   "mobile.settings.agents.commitSection": "Git-commits",
-  "mobile.settings.agents.commitCoAuthor": "OpenBot vermelden in commits",
+  "mobile.settings.agents.commitCoAuthor": "AtlasBot vermelden in commits",
   "mobile.settings.agents.commitCoAuthorFooter":
-    "Agents voegen OpenBot toe als co-auteur van hun commits. Jij blijft de auteur.",
+    "Agents voegen AtlasBot toe als co-auteur van hun commits. Jij blijft de auteur.",
   "mobile.settings.agents.planStart.title": "Het werk starten",
   "mobile.settings.agents.planStart.wait": "Als ik op Starten druk",
   "mobile.settings.agents.planStart.after": "Na {time}",
@@ -352,7 +352,7 @@ export const messages = {
     "Het maximale aantal berichten en routine-uitvoeringen dat lokale scripts per uur naar elke agent kunnen sturen. Dit geldt voor alle agents op deze server.",
   "mobile.settings.agents.processes.title": "Achtergrondprocessen",
   "mobile.settings.agents.processes.description":
-    "Programma's die agents hebben gestart en laten draaien, zoals dev-servers. Ze blijven draaien als de chat eindigt en als je OpenBot afsluit.",
+    "Programma's die agents hebben gestart en laten draaien, zoals dev-servers. Ze blijven draaien als de chat eindigt en als je AtlasBot afsluit.",
   "mobile.settings.agents.processes.empty": "Er draaien geen programma's van agents.",
   "mobile.settings.agents.processes.loadFailed": "De achtergrondprocessen konden niet worden gelezen.",
   "mobile.settings.agents.processes.noAgent": "Geen agent",
@@ -368,18 +368,18 @@ export const messages = {
   "mobile.settings.shortcuts.unsupported": "Opdrachten hebben iOS 26 of nieuwer nodig.",
   "mobile.settings.shortcuts.card.agents": "Agents",
   "mobile.settings.shortcuts.card.noAgents": "Nog geen agents",
-  "mobile.settings.shortcuts.card.setUp.title": "Open OpenBot om opdrachten in te stellen",
-  "mobile.settings.shortcuts.card.setUp.action": "Open OpenBot",
+  "mobile.settings.shortcuts.card.setUp.title": "Open AtlasBot om opdrachten in te stellen",
+  "mobile.settings.shortcuts.card.setUp.action": "Open AtlasBot",
   "mobile.settings.shortcuts.card.noAgent.title": "Kies een agent voor opdrachten",
   "mobile.settings.shortcuts.card.noAgent.detail": "Opdrachten sturen naar één agent.",
   "mobile.settings.shortcuts.card.noAgent.action": "Kies agent",
-  "mobile.settings.shortcuts.card.locked.title": "OpenBot is vergrendeld",
-  "mobile.settings.shortcuts.card.locked.action": "Open OpenBot",
+  "mobile.settings.shortcuts.card.locked.title": "AtlasBot is vergrendeld",
+  "mobile.settings.shortcuts.card.locked.action": "Open AtlasBot",
   "mobile.settings.shortcuts.footer":
     "Send Message in de Opdrachten-app stuurt naar deze agent. De app gaat niet open.",
   "mobile.settings.shortcuts.send.sent": "Verzonden",
-  "mobile.settings.shortcuts.send.failed": "OpenBot kon dit niet verzenden.",
+  "mobile.settings.shortcuts.send.failed": "AtlasBot kon dit niet verzenden.",
   "mobile.settings.shortcuts.send.unconfirmed": "Geen antwoord van de server. Het bericht kan in de chat staan.",
-  "mobile.settings.shortcuts.send.inApp": "Stuur in OpenBot",
+  "mobile.settings.shortcuts.send.inApp": "Stuur in AtlasBot",
   "mobile.settings.shortcuts.send.openChat": "Open chat",
 } as const satisfies PartialTranslation<typeof source>;

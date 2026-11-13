@@ -2,7 +2,7 @@ import type { PartialTranslation } from "../../message";
 import type { messages as source } from "../en/webClient";
 
 export const messages = {
-  "webClient.loading": "OpenBot 불러오는 중…",
+  "webClient.loading": "AtlasBot 불러오는 중…",
   "webClient.loadingLine.wake": "에이전트들을 깨우는 중…",
   "webClient.loadingLine.coffee": "에이전트들에게 커피를 따르는 중…",
   "webClient.loadingLine.tokens": "손가락으로 토큰을 세는 중…",
@@ -30,7 +30,7 @@ export const messages = {
   "webClient.connect.stepInstall": "컴퓨터에 OpenBot을 설치하고 여세요.",
   "webClient.connect.stepSignIn": "이메일로 로그인하세요.",
   "webClient.connect.stepRemote": "원격 접근을 켜세요.",
-  "webClient.notice.download": "OpenBot 다운로드",
+  "webClient.notice.download": "AtlasBot 다운로드",
   "webClient.notice.createServer": "호스팅 서버 만들기",
   "webClient.notice.join": "초대로 참여",
   "webClient.notice.refreshHosts": "서버 새로 고침",
@@ -72,7 +72,7 @@ export const messages = {
   "webClient.error.identityChanged": "서버 ID가 바뀌어 연결을 거부했어요.",
   "webClient.error.connectionUnavailable": "서버 연결을 사용할 수 없어요.",
   "webClient.error.incompatible":
-    "이 서버는 OpenBot 웹과 호환되지 않아요. 서버를 업데이트한 후 이 페이지를 새로 고쳐 주세요.",
+    "이 서버는 AtlasBot 웹과 호환되지 않아요. 서버를 업데이트한 후 이 페이지를 새로 고쳐 주세요.",
   "webClient.error.sendUnconfirmed": "메시지 전달을 확인하지 못했어요. 다시 보내기 전에 새로 고쳐 주세요.",
   "webClient.error.fileType": "이 파일 형식을 첨부하려면 서버를 업데이트해 주세요.",
   "webClient.error.uploadCancelled": "첨부 파일 업로드가 취소되었어요.",

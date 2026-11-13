@@ -1,22 +1,22 @@
 {
   "name": "openbot",
-  "productName": "OpenBot",
+  "productName": "AtlasBot",
   "desktopName": "openbot.desktop",
   "version": "0.70.0",
-  "description": "A local-first multi-agent desktop workspace for Codex, Claude, and Grok.",
+  "description": "AtlasBot enterprise AI workspace for executive governance, multi-agent operations and agent-computer workflows.",
   "author": {
-    "name": "Norbert Bodziony",
-    "url": "https://x.com/norbertbodziony"
+    "name": "ATLAS GLOBAL TECH LTD",
+    "url": "https://atlas-si.com"
   },
   "license": "PolyForm-Noncommercial-1.0.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nightly-labs/openbot.git"
+    "url": "git+https://github.com/AtlasHub-Si/Atlas-Bot-Desktop.git"
   },
   "bugs": {
-    "url": "https://github.com/nightly-labs/openbot/issues"
+    "url": "https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/issues"
   },
-  "homepage": "https://github.com/nightly-labs/openbot#readme",
+  "homepage": "https://bot.atlas-si.com",
   "keywords": [
     "ai-agents",
     "bun",

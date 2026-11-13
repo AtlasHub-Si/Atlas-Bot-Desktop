@@ -1,3 +1,6 @@
+> **AtlasHub.SI project stewardship · [Atlas identity & provenance](ATLAS.md) · [Legal information](LEGAL.md)**  
+> Maintained in the AtlasHub-Si ecosystem; source curation reference: [SergioMonteiro-Atlas](https://github.com/sergiomonteiro-atlas). Original upstream licenses and author notices remain in effect.
+
 # OpenBot
 
 [![CI](https://github.com/nightly-labs/openbot/actions/workflows/ci.yml/badge.svg)](https://github.com/nightly-labs/openbot/actions/workflows/ci.yml)

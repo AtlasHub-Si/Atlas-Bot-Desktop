@@ -1,0 +1,24 @@
+{
+  "version": "0.7.0",
+  "state": "DEV_APPROVED",
+  "brandRepo": "AtlasHub-Si/atlas-brand-system",
+  "archive": {
+    "driveId": "1vPg8qi02qOTU3UpUZut9PH0DEFcBse2c",
+    "sha256": "f23e9807bb7051d1dcaa23e7e20846390f9b223b68b5e090ab8827500fb1ef43"
+  },
+  "assets": {
+    "markTransparent": "01_logo_approved/atlas-A-premium-transparent-master-DEV-APPROVED.png",
+    "appIcon": "01_logo_approved/atlas-A-premium-icon-master-DEV-APPROVED.png",
+    "faviconIco": "02_favicons_web/atlasbot-favicon.ico",
+    "desktopIco": "03_icons_desktop/atlasbot-app.ico",
+    "desktopIcns": "03_icons_desktop/atlasbot-app.icns",
+    "introWide": "04_motion/atlas-A-energy-intro-16x9-DEV-APPROVED.mp4",
+    "introVertical": "04_motion/atlas-A-energy-intro-9x16-DEV-APPROVED.mp4",
+    "loaderWebp": "04_motion/atlas-A-energy-loader-256.webp"
+  },
+  "requiresHumanReview": [
+    "native platform icon rendering",
+    "actual Solid integration QA",
+    "legal clearance before commercial releases"
+  ]
+}

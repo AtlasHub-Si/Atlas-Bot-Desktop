@@ -9,11 +9,14 @@ from zipfile import ZipFile
 
 TARGET = Path("src/renderer/src/assets/atlasbot-v0.5")
 PREFIX = PurePosixPath("renderer-assets/atlasbot-v0.5")
+EXPECTED_ARCHIVE_SHA256 = "68a7cb7ebf42de2ff7384f439acb9ce8e081d6261ef3003720daaf880928bd99"
 
 def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 def install(archive: Path, repo: Path, apply: bool) -> tuple[int, int]:
+    if digest(archive.read_bytes()) != EXPECTED_ARCHIVE_SHA256:
+        raise ValueError("Archive checksum differs from the reviewed V0.5 pack")
     with ZipFile(archive) as z:
         names = set(z.namelist())
         if "MANIFEST.json" not in names:

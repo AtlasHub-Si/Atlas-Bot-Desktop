@@ -8,6 +8,7 @@
 - No original frozen baseline is committed to this public repo.
 - 5 original character candidates: Creator / Builder / Analyst / Flow / Shield. Guide remains preview-only.
 - 42 packaged assets, 14,296,352 uncompressed bytes; installer dry-run and isolated install both PASS.
+- Reviewed V0.5 ZIP SHA-256: `68a7cb7ebf42de2ff7384f439acb9ce8e081d6261ef3003720daaf880928bd99` (the repository installer rejects another archive).
 - [Full Desktop Visual Pack ZIP](https://drive.google.com/file/d/1xsOvg6ndOQ-S7zA1asrP1m-4KKwVMb-a/view), [QA contact sheet](https://drive.google.com/file/d/1gybUHugFLDtz70yYktszoEOebqDoXwaX/view), [manifest](https://drive.google.com/file/d/1gl-YnF6CQxBGfkN5LmQA65swaita1_uE/view).
 
 ## Integration plan

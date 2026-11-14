@@ -2,14 +2,34 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { resolve, dirname } from "node:path";
-import ts from "typescript";
+// Read JSONC without a dependency on TypeScript's changing config parser exports.
+// A comment marker inside a quoted URL is content, not a comment.
+function stripComments(input) {
+  let out = "";
+  let quoted = false;
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i];
+    if (ch === '"' && (i === 0 || input[i - 1] !== "\\")) quoted = !quoted;
+    if (!quoted && ch === "/" && input[i + 1] === "/") {
+      while (i < input.length && input[i] !== "\n") i++;
+      out += "\n";
+      continue;
+    }
+    if (!quoted && ch === "/" && input[i + 1] === "*") {
+      i += 2;
+      while (i < input.length && !(input[i] === "*" && input[i + 1] === "/")) i++;
+      i++;
+      continue;
+    }
+    out += ch;
+  }
+  return out;
+}
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const path = resolve(root, "apps/auth-api/wrangler.jsonc");
 const source = readFileSync(path, "utf8");
-const parsed = ts.parseConfigFileTextToJson(path, source);
-assert.equal(parsed.error, undefined, "Wrangler JSONC must parse");
-const config = parsed.config;
+const config = JSON.parse(stripComments(source).replace(/,\s*([}\]])/g, "$1"));
 const stage = config?.env?.["atlas-staging"];
 assert.ok(stage, "Missing atlas-staging environment");
 assert.equal(stage.name, "atlasbot-auth-staging");

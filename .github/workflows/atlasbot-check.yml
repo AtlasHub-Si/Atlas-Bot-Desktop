@@ -25,3 +25,19 @@ jobs:
       - run: bun run typecheck:renderer
       - run: bun run typecheck:brand
       - run: bun run build
+
+  api-staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - run: bun install --frozen-lockfile
+      - run: node scripts/check-atlas-staging.mjs
+      - name: Build isolated AtlasBot API (no deploy)
+        working-directory: apps/auth-api
+        env:
+          CLOUDFLARE_ENV: atlas-staging
+        run: bun run build

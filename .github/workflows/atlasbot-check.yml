@@ -19,6 +19,7 @@ jobs:
         with:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
+      - run: node scripts/check-atlas-staging.mjs
       - run: bun run i18n:check
       - run: bun run typecheck:node
       - run: bun run typecheck:renderer

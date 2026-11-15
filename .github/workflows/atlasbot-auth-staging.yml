@@ -1,0 +1,113 @@
+name: AtlasBot account staging release gate
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/atlasbot-auth-staging.yml
+      - apps/auth-api/**
+      - scripts/check-atlas-staging.mjs
+      - scripts/atlas-auth-worker-e2e.mjs
+  workflow_dispatch:
+    inputs:
+      execution:
+        description: "Plan only or apply to the isolated Atlas staging account"
+        required: true
+        default: plan
+        type: choice
+        options:
+          - plan
+          - apply
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atlasbot-auth-staging-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Use pinned Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+      - name: Verify license and isolated Atlas staging config
+        run: |
+          node scripts/check-atlas-mit-license.mjs
+          node scripts/check-atlas-staging.mjs
+      - name: Typecheck API
+        run: bun run typecheck:api
+      - name: Build Atlas staging Worker
+        working-directory: apps/auth-api
+        env:
+          CLOUDFLARE_ENV: atlas-staging
+          CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: "false"
+        run: bun run build
+      - name: Verify local Worker routes, sessions and migrations
+        run: bun scripts/atlas-auth-worker-e2e.mjs
+      - name: Record stage source only
+        run: |
+          printf 'source=%s\nmode=%s\n' "$GITHUB_SHA" "isolated preflight" >> "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' 'No remote deploy, database migration, API token or mail activity from this job.' >> "$GITHUB_STEP_SUMMARY"
+
+  stage-apply:
+    needs: preflight
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.execution == 'apply' && github.ref == 'refs/heads/main' }}
+    environment: atlasbot-auth-staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      CLOUDFLARE_ACCOUNT_ID: 51b1aab5e657d8822c8c882c026b879c
+      CLOUDFLARE_API_TOKEN: ${{ secrets.ATLASBOT_CF_STAGING_DEPLOY_TOKEN }}
+      CLOUDFLARE_SEND_METRICS: "false"
+      CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - name: Require owned Cloudflare deployment credential
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}" || { echo "ATLASBOT_CF_STAGING_DEPLOY_TOKEN not configured"; exit 1; }
+          test "$CLOUDFLARE_ACCOUNT_ID" = "51b1aab5e657d8822c8c882c026b879c"
+      - run: bun install --frozen-lockfile
+      - name: Validate source and build strictly Atlas environment
+        run: |
+          node scripts/check-atlas-mit-license.mjs
+          node scripts/check-atlas-staging.mjs
+          bun run typecheck:api
+          CLOUDFLARE_ENV=atlas-staging bun run --cwd apps/auth-api build
+      - name: Assert built Worker has no public routes or inherited services
+        working-directory: apps/auth-api
+        run: |
+          node --input-type=module -e '
+            import {readFileSync} from "node:fs";
+            const c=JSON.parse(readFileSync("dist/server/wrangler.json","utf8"));
+            if(c.name!=="atlasbot-auth-staging"||c.workers_dev!==false||c.preview_urls!==false||c.routes?.length||c.services?.length||c.send_email?.length||c.triggers?.crons?.length||c.vars?.AUTH_EXPOSE_DEVELOPMENT_CODE!=="false"||c.d1_databases?.[0]?.database_id!=="321fd070-533d-4708-b108-af97f809e8d8") process.exit(1);
+          '
+      - name: Inspect pending migrations against isolated Atlas D1
+        working-directory: apps/auth-api
+        run: bunx wrangler d1 migrations list DB --config wrangler.jsonc --env atlas-staging --remote
+      - name: Apply only pending stage migrations (Wrangler creates backup)
+        working-directory: apps/auth-api
+        run: bunx wrangler d1 migrations apply DB --config wrangler.jsonc --env atlas-staging --remote
+      - name: Deploy stage Worker without public routes
+        working-directory: apps/auth-api
+        run: bunx wrangler deploy --config dist/server/wrangler.json
+      - name: Record bounded completion
+        run: |
+          printf 'Staging Worker source: %s\n' "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          printf 'No workers.dev, public routes, site publishing or updater were enabled. Live authentication, signing secrets, Signal/TURN and Mobile acceptance remain separate gates.\n' >> "$GITHUB_STEP_SUMMARY"

@@ -35,7 +35,7 @@ and state which default you set aside. Do not argue by citing this file.
 - **Keep the renderer-to-main trust boundary:** Electron sandboxing, context isolation, navigation
   policy, IPC sender validation, and their tests. Coding agents already have `danger-full-access`.
 - **Redact secrets** on every log, export, and send path, including diagnostics and analytics.
-- **Keep PolyForm Noncommercial 1.0.0.** Do not add incompatible dependencies or relicense files.
+- **Keep the current root LICENSE and third-party NOTICE in effect until relicensing rights are verified.** The owner requests a transition to AtlasBot MIT open source and reports an agreement with the original developers. Do not claim that the inherited code is already MIT or remove third-party notices without checking the agreement's scope and authorship. See [open-source transition](docs/atlas/OPEN_SOURCE_TRANSITION.md).
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md#security-sensitive-changes) when a change touches the trust
 boundary or a security test, and [architecture change rules](docs/architecture/change-rules.md#change-rules) when

@@ -15,10 +15,12 @@ The entities above are listed as AtlasHub.SI legal points of reference. This doc
 
 ## Licensing rule
 
-For repositories derived from a third-party project, its applicable original license and required copyright notices remain intact and continue to govern the inherited code. Atlas trademarks, original documentation and modifications may have separate rights; their presence does not revoke or override upstream permissions or obligations.
+**AtlasBot source is distributed under the MIT License** in [LICENSE](LICENSE). The owner confirms that the licensing arrangement with the original developers was validated by Atlas's legal team on 15 November 2026. The source license transition is documented in [docs/atlas/OPEN_SOURCE_TRANSITION.md](docs/atlas/OPEN_SOURCE_TRANSITION.md).
 
-No code, weights, assets, trade marks or service API is re-licensed through this document. In particular, moving or detaching a GitHub fork does **not** change its underlying license.
+Third-party copyright notices remain in [NOTICE](NOTICE). The Git lineage is acknowledged; legal permission to distribute the source under MIT does not turn upstream authorship into original Atlas authorship. Third-party provider runtimes, dependencies, trademarks, art and service APIs are not automatically MIT-licensed by this decision.
+
+New code from the upstream project must pass a **rights review for that specific revision** before it is imported. Merely synchronizing a GitHub fork does not grant rights for future contributions.
 
 For legal questions or commercial redistribution permissions, write to **legal@Atlas-SI.com**. For technical support, write to **support@AtlasHub.SI**.
 
-_AtlasHub.SI repository notice · 13 November 2026_
+_AtlasHub.SI repository notice · updated 15 November 2026_

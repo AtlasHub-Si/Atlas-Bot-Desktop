@@ -41,7 +41,7 @@ assert.equal(stage.vars?.HOSTED_SERVERS_ENABLED, "false");
 assert.equal(stage.vars?.AUTH_EXPOSE_DEVELOPMENT_CODE, "false");
 assert.equal(stage.vars?.SITE_PUBLISH_ENABLED, "false");
 assert.equal(stage.vars?.SIGNAL_ENTRY_ZONE_ID, "");
-assert.equal(stage.vars?.EMAIL_FROM, "");
+assert.equal(stage.vars?.EMAIL_FROM, "no-reply@atlas-si.com");
 assert.equal(stage.vars?.GITHUB_APP_CLIENT_ID, "");
 assert.equal(stage.d1_databases?.length, 1);
 assert.equal(stage.d1_databases[0].database_name, "atlasbot-auth-staging");
@@ -57,6 +57,7 @@ assert.deepEqual(
 assert.deepEqual(
   stage.secrets.required.slice().sort(),
   [
+    "RESEND_API_KEY",
     "REMOTE_TICKET_PRIVATE_JWK",
     "REMOTE_TICKET_PUBLIC_JWKS",
     "REMOTE_AUTH_WEBHOOK_SECRET",

@@ -23,8 +23,10 @@ export interface FirstRunChoiceProps {
    */
   analytics: boolean;
   onAnalyticsChange: (enabled: boolean) => void;
-  onOpenTerms: () => void;
-  onOpenPrivacy: () => void;
+  /** Internal Canary: show explicit evaluation scope, never upstream legal acceptance. */
+  evaluationOnly?: boolean;
+  onOpenTerms?: () => void;
+  onOpenPrivacy?: () => void;
 }
 
 const PLAN_LOGOS: readonly ProviderLogoVariant[] = ["codex", "claude", "grok"];
@@ -103,7 +105,11 @@ export function FirstRunChoice(props: FirstRunChoiceProps) {
           <ChevronRight class="first-run-choice-row-chevron" aria-hidden="true" />
         </Button>
       </div>
-      <ConsentNotice onOpenTerms={() => props.onOpenTerms()} onOpenPrivacy={() => props.onOpenPrivacy()} />
+      {props.evaluationOnly ? (
+        <p class="first-run-consent-notice">{t("onboarding.consent.evaluationOnly")}</p>
+      ) : props.onOpenTerms && props.onOpenPrivacy ? (
+        <ConsentNotice onOpenTerms={props.onOpenTerms} onOpenPrivacy={props.onOpenPrivacy} />
+      ) : null}
       <Show when={props.reason}>
         {(reason) => (
           <p class="onboarding-next-reason first-run-choice-reason" id={reasonId}>

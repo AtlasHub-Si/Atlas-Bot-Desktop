@@ -1,4 +1,5 @@
 import { Effect } from "effect";
+import { EmailDeliveryError } from "./email-delivery-error";
 import { prepareEmailCode, RATE_LIMITED_DELIVERY_ERROR } from "./smtp-email-delivery";
 import type { EmailCodeDelivery } from "./types";
 
@@ -38,22 +39,15 @@ export function createResendEmailCodeDelivery(input: {
           signal: AbortSignal.any([signal, AbortSignal.timeout(10_000)]),
         }),
       // After a timeout it is not safe to assume Resend did not accept the message.
-      catch: () => new AtlasResendDeliveryError("email_delivery_unknown"),
+      catch: () => new EmailDeliveryError({ message: "email_delivery_unknown" }),
     });
-    if (response.status === 429) return yield* new AtlasResendDeliveryError(RATE_LIMITED_DELIVERY_ERROR);
+    if (response.status === 429) return yield* new EmailDeliveryError({ message: RATE_LIMITED_DELIVERY_ERROR });
     if (!response.ok) {
-      return yield* new AtlasResendDeliveryError(
-        response.status >= 500 ? "email_delivery_unknown" : "email_delivery_resend_failed",
-      );
+      return yield* new EmailDeliveryError({
+        message: response.status >= 500 ? "email_delivery_unknown" : "email_delivery_resend_failed",
+      });
     }
   });
   return { send };
 }
 
-/** Class name is internal; the account service branches on the stable error message. */
-class AtlasResendDeliveryError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "AtlasResendDeliveryError";
-  }
-}

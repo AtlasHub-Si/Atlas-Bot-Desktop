@@ -8,7 +8,7 @@ import { once } from "node:events";
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 
@@ -21,6 +21,7 @@ const output = join(root, ".openbot-build/atlas-auth-worker-e2e");
 const scratch = await mkdtemp(join(tmpdir(), "atlas-auth-worker-"));
 const state = join(scratch, "state");
 const configPath = join(app, "dist/server/wrangler.atlas-ci.json");
+const entryPath = join(app, "dist/server/worker.atlas-ci.mjs");
 const checks = [];
 const diagnostics = [];
 let diagnosticTail = "";
@@ -37,6 +38,7 @@ const childEnv = {
   WRANGLER_SEND_METRICS: "false",
   CLOUDFLARE_SEND_METRICS: "false",
   CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: "false",
+  CLOUDFLARE_INCLUDE_PROCESS_ENV: "true",
 };
 
 function check(name, condition, detail) {
@@ -167,6 +169,7 @@ try {
   const local = {
     ...built,
     name: "atlasbot-auth-ci-local",
+    main: basename(entryPath),
     account_id: undefined,
     routes: [],
     workers_dev: false,
@@ -188,10 +191,20 @@ try {
     },
     d1_databases: built.d1_databases.map((db) => ({ ...db, migrations_dir: join(app, "migrations") })),
   };
+  const entry = "import worker from " + JSON.stringify("./" + basename(built.main)) + ";\n" +
+    'export default { ...worker, async fetch(request, env, context) {\n' +
+    'if (new URL(request.url).pathname === "/__atlas_ci_bindings") return Response.json({\n' +
+    'privateKeyPresent: Boolean(env.REMOTE_TICKET_PRIVATE_JWK), publicKeyPresent: Boolean(env.REMOTE_TICKET_PUBLIC_JWKS),\n' +
+    'keyIdPresent: Boolean(env.REMOTE_TICKET_KEY_ID), privateKeyEnumerable: Object.keys(env).includes("REMOTE_TICKET_PRIVATE_JWK") });\n' +
+    'return worker.fetch(request, env, context); } };\n';
+  await writeFile(entryPath, entry);
   await writeFile(configPath, JSON.stringify(local), { mode: 0o600 });
   await command(["d1", "migrations", "apply", "DB", "--local", "--config", configPath, "--persist-to", state]);
   check("all source migrations apply to disposable local D1", migrations.length === 56);
   await startWorker();
+  const bindings = await request("/__atlas_ci_bindings");
+  check("the local Worker receives its generated signing bindings", bindings.status === 200 &&
+    bindings.body.privateKeyPresent && bindings.body.publicKeyPresent && bindings.body.keyIdPresent, bindings.body);
   check("anonymous device access is refused", (await request("/v1/mobile-auth/devices")).status === 401);
   check("anonymous pairing is refused", (await request("/v1/mobile-auth/ticket", {
     method: "POST", body: {},
@@ -271,6 +284,7 @@ try {
 } finally {
   await stopWorker();
   await rm(configPath, { force: true });
+  await rm(entryPath, { force: true });
   await rm(scratch, { recursive: true, force: true });
   await mkdir(output, { recursive: true });
   const passed = !failure && checks.length > 0 && checks.every((item) => item.passed);

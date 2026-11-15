@@ -9,8 +9,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: atlasbot-win-l0-${{ github.ref }}
-  cancel-in-progress: true
+  group: atlasbot-win-l0-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
   local-first-windows:

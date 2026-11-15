@@ -7,7 +7,7 @@ AtlasBot is an independent AtlasHub.SI product effort. This page identifies the 
 - **OpenBot** — original software and authors: **Synthetify Labs spółka z ograniczoną odpowiedzialnością**, with source lineage in [nightly-labs/openbot](https://github.com/nightly-labs/openbot). The AtlasBot Desktop currently contains inherited code from this project. Treat its legal provenance and any applicable notices as a separate obligation even after an authorised relicensing decision.
 - **Third-party components** — see the repository [NOTICE](../../NOTICE) for copyright and distribution notices attached to other code, fonts, icons and other materials.
 
-The project owner reports a separate agreement with the OpenBot developers. Its grant and any permission to sublicense under MIT have not been verified in this public source tree. See [the open-source transition gate](OPEN_SOURCE_TRANSITION.md).
+The project owner confirms Atlas legal counsel validated the agreement covering the AtlasBot MIT source transition on 15 November 2026. The private contract is not published here. New upstream code and third-party material still require rights review. See [the licensing decision](OPEN_SOURCE_TRANSITION.md) and [upstream intake policy](UPSTREAM_SYNC_POLICY.md).
 
 ## Independent product and design references
 

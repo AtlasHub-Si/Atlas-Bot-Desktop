@@ -1,0 +1,16 @@
+[
+  "package.json",
+  "src/main/app-icon.ts",
+  "src/main/main-window.ts",
+  "src/main/background-tray.ts",
+  "src/main/central-auth-manager.ts",
+  "src/main/application-services.ts",
+  "src/main/ipc/app-handlers.ts",
+  "src/main/skill-marketplace-service.ts",
+  "src/main/agent-marketplace-service.ts",
+  "apps/mobile/src/features/auth/api/mobile-auth.ts",
+  "packages/contracts/src/mobile-connect.ts",
+  "src/backend/opencode-config.ts",
+  "src/backend/provider-drivers.ts",
+  "apps/auth-api/src/server/session-policy.ts"
+]

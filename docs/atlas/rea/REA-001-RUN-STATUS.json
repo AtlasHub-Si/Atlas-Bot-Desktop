@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-15",
+  "state": "SOURCE_BUILD_PENDING",
+  "target_commit": "c8c2510ccc3ae85786792c27b24b658630e21c4f",
+  "rea_repository": "morluto/rea",
+  "rea_version": "6.9.0",
+  "rea_reviewed_release_commit": "d74549e495c58eb4a560279fd9f05508401ea0a0",
+  "method": "Exact official source checkout pinned to reviewed release commit; locked tool dependencies installed without lifecycle scripts; explicit reviewed compile and selected-source static analysis with clean environment and no network",
+  "source_selection": "REA-001-SOURCE-SELECTION.json",
+  "workflow": ".github/workflows/atlasbot-rea-static.yml",
+  "run_url": null,
+  "artifact": null,
+  "analysis_exit_code": null,
+  "limitations": [
+    "This status must be updated only after reading the actual CI result.",
+    "The full REA-001 mission remains incomplete.",
+    "No Windows UI, mobile pairing, OAuth, production login, egress capture or complete screen inventory is established by this static lane."
+  ],
+  "history": [
+    {
+      "run_id": 43747505930,
+      "run_url": "https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/actions/runs/43747505930",
+      "state": "BLOCKED_AT_PUBLISHED_PACKAGE_PROVENANCE",
+      "reason": "npm package gitHead/name/version comparison did not match the reviewed release metadata; package acquisition and analysis skipped",
+      "artifact": {
+        "id": 14174748967,
+        "name": "atlasbot-rea-static-43747505930",
+        "bytes": 294554,
+        "sha256": "701d3fa4b9c8992581a813eff007a0b90d3ddf4297f3795ef4ef512892c22212"
+      }
+    }
+  ]
+}

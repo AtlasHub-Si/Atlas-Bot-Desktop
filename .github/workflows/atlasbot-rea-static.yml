@@ -1,0 +1,129 @@
+name: AtlasBot official REA static evidence
+
+on:
+  push:
+    branches: [audit/atlasbot-continuity-rea-20261115]
+    paths:
+      - .github/workflows/atlasbot-rea-static.yml
+      - docs/atlas/rea/REA-001-SOURCE-SELECTION.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atlasbot-rea-static-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  static-source-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      TARGET_COMMIT: c8c2510ccc3ae85786792c27b24b658630e21c4f
+      REA_COMMIT: d74549e495c58eb4a560279fd9f05508401ea0a0
+      REA_VERSION: 6.9.0
+    steps:
+      - name: Read audit inputs without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          path: audit
+      - name: Read exact target baseline without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: c8c2510ccc3ae85786792c27b24b658630e21c4f
+          persist-credentials: false
+          path: target
+      - name: Read exact official REA source without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: morluto/rea
+          ref: d74549e495c58eb4a560279fd9f05508401ea0a0
+          persist-credentials: false
+          path: rea-source
+      - name: Configure supported Node runtime
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.22.1
+      - name: Record exact target and official source provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence analysis-target
+          test "$(git -C target rev-parse HEAD)" = "$TARGET_COMMIT"
+          git -C target archive HEAD | tar -x -C analysis-target
+          git -C target ls-tree -r HEAD > evidence/target-tree.txt
+          cp audit/docs/atlas/rea/REA-001-SOURCE-SELECTION.json evidence/source-selection.json
+          printf '%s\n' "$TARGET_COMMIT" > evidence/target-commit.txt
+          printf '%s\n' "$REA_COMMIT" > evidence/rea-reviewed-commit.txt
+          node --version > evidence/node-version.txt
+          npm --version > evidence/npm-version.txt
+          test "$(git -C rea-source rev-parse HEAD)" = "$REA_COMMIT"
+          git -C rea-source ls-tree -r HEAD > evidence/rea-source-tree.txt
+          cp rea-source/package.json evidence/rea-package.json
+          cp rea-source/package-lock.json evidence/rea-source-package-lock.json
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          const meta = JSON.parse(fs.readFileSync("evidence/rea-package.json", "utf8"));
+          if (meta.name !== "rea-agents" || meta.version !== process.env.REA_VERSION) throw new Error("Reviewed source package version mismatch");
+          const paths = JSON.parse(fs.readFileSync("evidence/source-selection.json", "utf8"));
+          for (const path of paths) {
+            if (typeof path !== "string" || path.startsWith("/") || path.split("/").includes("..")) throw new Error("Invalid selected path");
+            fs.accessSync("analysis-target/" + path, fs.constants.R_OK);
+          }
+          NODE
+      - name: Acquire locked official tool dependencies without lifecycle scripts
+        shell: bash
+        working-directory: rea-source
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+      - name: Compile reviewed official source without network or account environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          clean_home="$RUNNER_TEMP/atlasbot-rea-home"
+          mkdir -p "$clean_home"
+          node_bin="$(command -v node)"
+          # Explicit reviewed compile steps from the pinned official package.
+          # No prepare, setup, native provider, external model or target app command is run.
+          cd rea-source
+          for script in "scripts/run-typescript.mjs -p tsconfig.build.json" scripts/record-catalog-digests.mjs scripts/record-mcp-catalog.mjs scripts/bundle-runtime.mjs; do
+            # Each value is a fixed reviewed script and fixed optional compiler arguments.
+            read -r -a args <<< "$script"
+            timeout --signal=TERM --kill-after=15s 5m sudo unshare --net -- setpriv --reuid "$(id -u)" --regid "$(id -g)" --init-groups env -i PATH="$PATH" HOME="$clean_home" XDG_CACHE_HOME="$clean_home/.cache" "$node_bin" --max-old-space-size=3072 "${args[@]}"
+          done
+      - name: Analyze selected source without network or application execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          clean_home="$RUNNER_TEMP/atlasbot-rea-home"
+          mkdir -p "$clean_home"
+          node_bin="$(command -v node)"
+          cli="$GITHUB_WORKSPACE/rea-source/scripts/rea.mjs"
+          test -f "$cli"
+          # No target dependency install, user profile, account credentials, browser or application launch.
+          # Drop root after creating the isolated network namespace; keep a clean analysis environment.
+          set +e
+          timeout --signal=TERM --kill-after=15s 8m sudo unshare --net -- setpriv --reuid "$(id -u)" --regid "$(id -g)" --init-groups env -i PATH="$PATH" HOME="$clean_home" XDG_CACHE_HOME="$clean_home/.cache" "$node_bin" --max-old-space-size=3072 "$cli" analyze-javascript-application "$GITHUB_WORKSPACE/analysis-target" --source-paths-json "$GITHUB_WORKSPACE/evidence/source-selection.json" --detail summary --evidence_output "$GITHUB_WORKSPACE/evidence/rea-evidence.json" --json > evidence/rea-summary.json 2> evidence/rea-stderr.log
+          result=$?
+          set -e
+          printf '%s\n' "$result" > evidence/analysis-exit-code.txt
+          exit "$result"
+      - name: Hash evidence including failure diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          printf '%s\n' "Static selected-source lane only. No Electron/Windows/mobile/runtime network acceptance." > evidence/SCOPE.txt
+          find evidence -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > evidence/SHA256SUMS
+      - name: Preserve official REA evidence or exact blocker
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: atlasbot-rea-static-${{ github.run_id }}
+          path: evidence/
+          retention-days: 7
+          if-no-files-found: error

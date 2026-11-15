@@ -1,6 +1,6 @@
 appId: si.atlashub.atlasbot.canary
 productName: AtlasBot
-copyright: Copyright © 2026 Synthetify Labs spółka z ograniczoną odpowiedzialnością
+copyright: Copyright © 2026 ATLAS GLOBAL TECH LTD. Portions Copyright © 2026 Synthetify Labs spółka z ograniczoną odpowiedzialnością
 protocols:
   - name: AtlasBot invitations
     schemes:

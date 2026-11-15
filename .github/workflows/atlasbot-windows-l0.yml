@@ -39,6 +39,9 @@ jobs:
         run: |
           bun run typecheck:node
           bun run typecheck:renderer
+      - name: Verify local-only L0 first boot without any account service
+        shell: pwsh
+        run: bun scripts/test-atlas-l0-local-auth.ts
       - name: Build internal AtlasBot Windows x64 installer
         shell: pwsh
         run: bun run dist:win

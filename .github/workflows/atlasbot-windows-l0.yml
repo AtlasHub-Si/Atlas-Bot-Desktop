@@ -1,0 +1,73 @@
+name: AtlasBot Windows L0 operational verification
+
+on:
+  push:
+    branches: [test/atlasbot-local-operational-l0-20261115]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atlasbot-win-l0-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  local-first-windows:
+    runs-on: windows-2025
+    timeout-minutes: 100
+    env:
+      ATLASBOT_ENABLE_UPDATES: "0"
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - name: Checkout AtlasBot MIT source
+        uses: actions/checkout@v4
+      - name: Configure Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - name: Install desktop dependencies, excluding mobile
+        shell: pwsh
+        run: bun install --frozen-lockfile --filter '!@openbot/mobile'
+      - name: Check MIT licensing and isolated Atlas Windows identity
+        shell: pwsh
+        run: |
+          node scripts/check-atlas-mit-license.mjs
+          node scripts/check-atlas-windows-canary.mjs
+      - name: Typecheck Desktop and renderer
+        shell: pwsh
+        run: |
+          bun run typecheck:node
+          bun run typecheck:renderer
+      - name: Offline agent workspace test with fake ACP runtime
+        shell: pwsh
+        run: bun run test:custom-agents
+      - name: Offline local provider discovery against fake servers
+        shell: pwsh
+        run: bun run test:provider-detection
+      - name: Build internal AtlasBot Windows x64 installer
+        shell: pwsh
+        run: bun run dist:win
+      - name: Verify unpacked Windows app
+        shell: pwsh
+        run: bun run verify:package:win
+      - name: Record installer name, size and SHA-256
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem dist -File -Filter '*x64.exe' -ErrorAction SilentlyContinue)
+          if ($files.Count -ne 1) { throw "Expected exactly one x64 installer, found $($files.Count)" }
+          $hashes = @($files | Get-FileHash -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $([System.IO.Path]::GetFileName($_.Path))" })
+          $hashes | Out-File -FilePath dist/sha256.txt -Encoding utf8
+          $files | Select-Object Name, Length | Format-Table
+          Get-Content dist/sha256.txt
+      - name: Upload installer for internal local acceptance only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlasbot-windows-l0-operational-${{ github.run_number }}
+          path: |
+            dist/*x64.exe
+            dist/sha256.txt
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0

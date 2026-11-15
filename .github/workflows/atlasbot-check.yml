@@ -21,6 +21,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: node scripts/check-atlas-mit-license.mjs
       - run: node scripts/check-atlas-staging.mjs
+      - run: node scripts/check-atlas-l0-identity.mjs
       - run: bun run i18n:check
       - run: bun run typecheck:node
       - run: bun run typecheck:renderer

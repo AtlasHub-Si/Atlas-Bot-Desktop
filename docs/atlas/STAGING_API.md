@@ -22,7 +22,8 @@ No AtlasBot Worker was returned by the Worker script list query. This is not pro
 `apps/auth-api/wrangler.jsonc` now has an independent `env.atlas-staging` with the resource names above. It intentionally has:
 
 - No Cloudflare routes, workers.dev URL, or cron triggers.
-- No billing, server provisioning, marketplace publishing, GitHub App, APNS or SMTP delivery.
+- No billing, server provisioning, marketplace publishing, GitHub App, APNS or inherited SMTP delivery.
+- Atlas-only email OTP uses the Resend HTTP API when `RESEND_API_KEY` is provisioned as a secret. `EMAIL_FROM` is `no-reply@atlas-si.com`. Source adapter: `apps/auth-api/src/server/atlas-resend-email-delivery.ts`; the sender domain is verified in Resend, but **the API key has not yet been configured and no live OTP test has passed**.
 - Loopback placeholders for the Signal and auth-events destinations, with no upstream OpenBot hosts.
 - Its own ratelimit namespace IDs, isolated D1 and R2 bindings, and a named list of required secrets.
 
@@ -37,7 +38,7 @@ Run `node scripts/check-atlas-staging.mjs` for static safety assertions. The exi
 3. Check the API build with `cd apps/auth-api && bun run build`. Verify the built Worker uses `atlas-staging` instead of a production or upstream configuration before deployment.
 4. Review all D1 migrations in `apps/auth-api/migrations/` (55 numbered migrations at inspection time). Export a staging backup and obtain the migration/rollback plan. Review the output of `bunx wrangler d1 migrations list atlasbot-auth-staging --env atlas-staging --remote` before executing any migration. Apply only to `atlasbot-auth-staging`.
 5. Provision the required Atlas-only secret values in Cloudflare. Never reuse the upstream OpenBot signing keys, webhook secrets, app identifiers, mail account or production credentials. Do not commit secret values.
-6. Select and verify an Atlas-owned email transport. The inherited API uses SMTP/relay; a verified Resend domain alone does not mean OTP email delivery is configured.
+6. Provision a scoped Atlas-only `RESEND_API_KEY` in the `atlas-staging` Worker secret store, ensure Resend allows `no-reply@atlas-si.com`, and smoke-test OTP through the new HTTP adapter. The domain is verified; a live OTP send is not yet configured or demonstrated. Do not put the secret in GitHub source or logs.
 7. Review workers.dev/route exposure and put authentication in front of test access (for example, Cloudflare Access). Only then enable a reachable staging endpoint. Do not make an anonymous public release of an inherited PolyForm Noncommercial build.
 8. Check protected, isolated endpoints and egress with **test identities and test data only**; never enable real payments, paid-host creation, messaging integrations or customer data in this phase.
 

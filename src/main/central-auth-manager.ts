@@ -108,6 +108,8 @@ interface CentralAuthManagerOptions {
    * A hosted server sets it: its claim signs it in only when the stored session has ended.
    */
   confirmSessionAtStart?: boolean;
+  /** Canary-only local interface identity. Does not grant any cloud/remote session or token. */
+  localOnlyL0?: boolean;
 }
 
 /** The persistent Mobile Connect link of this desktop. The account service keeps only its hash. */
@@ -194,6 +196,7 @@ export class CentralAuthManager extends EventEmitter<CentralAuthEvents> {
   readonly #options: Required<CentralAuthManagerOptions>;
   readonly #transport: Layer.Layer<CentralAuthTransport>;
   #state: CentralAuthState = { status: "loading" };
+  readonly #localOnlyL0: boolean;
   #sessionToken: string | null = null;
   /** The session token in the stored file, or null when the file holds none that this start could read. */
   #storedSessionToken: string | null = null;
@@ -228,7 +231,14 @@ export class CentralAuthManager extends EventEmitter<CentralAuthEvents> {
 
   constructor(options: CentralAuthManagerOptions) {
     super();
-    const fetcher = detectBlockingNetwork(options.fetch ?? fetch, options.apiUrl);
+    this.#localOnlyL0 = options.localOnlyL0 === true;
+    // A local-only canary must never contact account or remote identity APIs.
+    const noRemoteAccountFetch: AuthFetcher = async () => {
+      throw new Error("AtlasBot L0 local mode: remote account API is disabled.");
+    };
+    const fetcher = this.#localOnlyL0
+      ? noRemoteAccountFetch
+      : detectBlockingNetwork(options.fetch ?? fetch, options.apiUrl);
     this.#transport = CentralAuthTransport.layer(fetcher);
     this.#options = {
       ...options,
@@ -242,6 +252,7 @@ export class CentralAuthManager extends EventEmitter<CentralAuthEvents> {
       emailCodeRequestTimeoutMs: options.emailCodeRequestTimeoutMs ?? EMAIL_CODE_REQUEST_TIMEOUT_MS,
       companySignInBrowser: options.companySignInBrowser ?? null,
       confirmSessionAtStart: options.confirmSessionAtStart ?? false,
+      localOnlyL0: this.#localOnlyL0,
     };
   }
 
@@ -1526,6 +1537,18 @@ export class CentralAuthManager extends EventEmitter<CentralAuthEvents> {
     this: CentralAuthManager,
   ): Effect.fn.Return<CentralAuthState, CentralAuthOperationError, CentralAuthTransport> {
     this.#setState({ status: "loading" });
+    if (this.#localOnlyL0) {
+      // Explicitly isolated Windows L0 canary: local UI and files only; no cloud credentials.
+      const hex = createHash("sha256").update(this.#options.storagePath).digest("hex");
+      const localId = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
+      return this.#setState({ status: "signed_in", user: {
+        id: localId,
+        email: "local@atlasbot.invalid",
+        name: "AtlasBot L0 · Apenas local",
+        avatarUrl: null,
+        analyticsEnabled: false,
+      } });
+    }
     let keyringChanged = false;
     // A session that cannot be read now stays on disk: a Keychain that is locked or asks for
     // permission at startup can open it at the next start, and the next sign-in replaces it.

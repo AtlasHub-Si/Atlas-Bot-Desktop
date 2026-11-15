@@ -38,10 +38,10 @@
 !macroend
 
 !macro customInstall
-  WriteRegStr SHCTX "Software\Classes\openbot" "" "URL:OpenBot invitations"
-  WriteRegStr SHCTX "Software\Classes\openbot" "URL Protocol" ""
-  WriteRegStr SHCTX "Software\Classes\openbot\DefaultIcon" "" "$appExe,0"
-  WriteRegStr SHCTX "Software\Classes\openbot\shell\open\command" "" '"$appExe" "%1"'
+  WriteRegStr SHCTX "Software\Classes\atlasbot-canary" "" "URL:OpenBot invitations"
+  WriteRegStr SHCTX "Software\Classes\atlasbot-canary" "URL Protocol" ""
+  WriteRegStr SHCTX "Software\Classes\atlasbot-canary\DefaultIcon" "" "$appExe,0"
+  WriteRegStr SHCTX "Software\Classes\atlasbot-canary\shell\open\command" "" '"$appExe" "%1"'
   !insertmacro openBotRemoveAppFromDataFolder
   !insertmacro openBotRemoveAppAboveInstallDirectory
 !macroend
@@ -61,8 +61,8 @@
     StrCpy ${PATH} ${PATH} -1
   ${endIf}
   ${if} ${PATH} != ""
-    !insertmacro openBotHolds ${PATH} "$PROFILE\OpenBot" ${OUT}
-    !insertmacro openBotHolds ${PATH} "$APPDATA\OpenBot" ${OUT}
+    !insertmacro openBotHolds ${PATH} "$PROFILE\AtlasBot Canary" ${OUT}
+    !insertmacro openBotHolds ${PATH} "$APPDATA\AtlasBot Canary" ${OUT}
   ${endIf}
   Pop $R9
   Pop $R8
@@ -101,10 +101,10 @@
       ${if} ${FileExists} "$1\${APP_EXECUTABLE_FILENAME}"
         StrCpy $openBotDataFolderInstall $1
       ${endIf}
-    ${elseIf} ${FileExists} "$PROFILE\OpenBot\${APP_EXECUTABLE_FILENAME}"
-      StrCpy $openBotDataFolderInstall "$PROFILE\OpenBot"
-    ${elseIf} ${FileExists} "$APPDATA\OpenBot\${APP_EXECUTABLE_FILENAME}"
-      StrCpy $openBotDataFolderInstall "$APPDATA\OpenBot"
+    ${elseIf} ${FileExists} "$PROFILE\AtlasBot Canary\${APP_EXECUTABLE_FILENAME}"
+      StrCpy $openBotDataFolderInstall "$PROFILE\AtlasBot Canary"
+    ${elseIf} ${FileExists} "$APPDATA\AtlasBot Canary\${APP_EXECUTABLE_FILENAME}"
+      StrCpy $openBotDataFolderInstall "$APPDATA\AtlasBot Canary"
     ${endIf}
     !insertmacro openBotHoldsUserData $INSTDIR $0
     ${if} $0 == "1"
@@ -207,9 +207,9 @@
 !macro customUnInstall
   ${ifNot} ${isUpdated}
     Push $0
-    ReadRegStr $0 SHCTX "Software\Classes\openbot\shell\open\command" ""
+    ReadRegStr $0 SHCTX "Software\Classes\atlasbot-canary\shell\open\command" ""
     ${if} $0 == '"$INSTDIR\${APP_EXECUTABLE_FILENAME}" "%1"'
-      DeleteRegKey SHCTX "Software\Classes\openbot"
+      DeleteRegKey SHCTX "Software\Classes\atlasbot-canary"
     ${endIf}
     Pop $0
   ${endIf}

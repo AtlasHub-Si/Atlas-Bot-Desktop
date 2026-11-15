@@ -1,10 +1,10 @@
-appId: app.openbot.desktop
+appId: si.atlashub.atlasbot.canary
 productName: AtlasBot
 copyright: Copyright © 2026 Synthetify Labs spółka z ograniczoną odpowiedzialnością
 protocols:
   - name: AtlasBot invitations
     schemes:
-      - openbot
+      - atlasbot-canary
 asar: true
 artifactName: ${productName}-${version}-${arch}.${ext}
 electronUpdaterCompatibility: ">=2.16"

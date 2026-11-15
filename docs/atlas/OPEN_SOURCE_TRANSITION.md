@@ -1,41 +1,36 @@
-# AtlasBot — Open-source transition gate (MIT proposal)
+# AtlasBot — source licensing decision and upstream governance
 
-**Status:** Preparation only. This document does not replace `LICENSE`, `NOTICE`, or a signed agreement.
-**Owner:** ATLAS GLOBAL TECH LTD.
-**Decision recorded:** 2026-11-15 — project owner reports an agreement with the original developers and requests an AtlasBot open-source license.
+**Source license:** MIT, see [root LICENSE](../../LICENSE).
+**Decision:** 15 November 2026.
+**Owner:** ATLAS GLOBAL TECH LTD (AtlasHub.SI).
 
-## Proposed license
+## Legal authorization record
 
-Use the **MIT License** for a future unified AtlasBot source distribution **only after the agreement is reviewed** and confirms the rights needed for this transition. See [MIT candidate](MIT_LICENSE_CANDIDATE.md).
+The project owner confirmed that the agreement with the original developers was **validated by the Atlas legal team**, and expressly authorized replacement of the product's inherited source license with MIT. This statement is recorded here as an owner decision; the private agreement and its signatories are not published in this repository.
 
-An agreement that permits commercial use or modification does **not necessarily** authorize relicensing or sublicensing third-party code under MIT. A copyright holder may also require an attribution or copyright notice even when relicensing is permitted.
+The root source `LICENSE` is now MIT; root and workspace package license identifiers were updated. The original commercial-licence contact notice is no longer used to describe the AtlasBot product.
 
-## Evidence to verify privately (not in the public repository)
+## What is still attributed
 
-1. The rights holder(s) that signed the agreement and whether they hold or can grant rights to the inherited code.
-2. The agreement date, license or assignment identifier, signed copy and covered OpenBot versions/commits.
-3. Permission to modify, reproduce, distribute, make derivative works, sell and offer hosted services.
-4. **Explicit permission to relicense or sublicense the covered source under MIT** to third parties, including commercial use, redistribution and downstream sublicensing.
-5. Whether the rights holder waives the original mandatory license text and notices, or requires specific acknowledgement in a `NOTICE` or `CREDITS` file.
-6. Third-party components, contributed code, fonts, icon libraries, dependencies, patents, artwork, model/runtime provider licenses and registered trademarks outside the grant.
-7. Whether the rights apply to ATLAS GLOBAL TECH LTD, the repository organization, distributors, and downstream open-source users.
+- OpenBot / Synthetify Labs retains its place in the technical source lineage and author-credit notice: [NOTICE](../../NOTICE).
+- Third-party libraries, fonts, bundled components, artwork, models, and externally downloaded vendor runtimes retain their separate license notices where applicable. They are not automatically MIT because the root AtlasBot source is.
+- The source Git history and original authorship are preserved, not rewritten.
+- Product brand and design assets may carry separate intellectual-property permissions.
 
-Do not commit the agreement or personal signatures to this public project. Record its internal reference and a legal reviewer decision only.
+## Mandatory checks for future upstream updates
 
-## Required implementation after evidence is approved
+The owner's validation of the existing source transition does not, by itself, establish whether **future upstream commits from other contributors** fall within that agreement. Any upstream update needs a rights check of added files, new dependencies, artwork and authorship, as well as technical review.
 
-- Create a verified rights and third-party attribution inventory. Keep third-party notices that are still required.
-- Replace the root `LICENSE` with MIT (and align package manifests and machine-readable SPDX references) only for code within the verified rights scope.
-- Update `NOTICE`, `LEGAL.md`, `AGENTS.md`, `README.md`, `CONTRIBUTING.md`, docs, generated build notices and web copy as needed. Remove outdated PolyForm wording **only when the relevant source rights have been cleared**.
-- Preserve accurate provenance and Git history. Do not claim the code was authored from scratch, even if a new license is permitted.
-- Do not strip third-party notices from bundled files or binaries solely for branding.
-- Run CI, license dependency scan, offline package inspection, installer notice check, and release review.
-- Unblock a public MIT release only after legal, security, visual and API/egress gates pass.
+Upstream intake must not auto-merge or deploy:
+1. Identify exact upstream SHA and changes after the last reviewed baseline.
+2. Review third-party rights, existing copyright and notices, package additions, and any sensitive files.
+3. Exclude/translate original branded assets, analytics/telemetry, origin URLs, upstream API, licensing markers and auto-updater changes.
+4. Preserve Atlas-specific API, D1/R2 bindings, Resend, local user profiles, protocols, brand imports, avatars and characters.
+5. Run core and API typechecks, egress checks, Windows package tests, data migration backups and regression tests.
+6. Integrate via a human-reviewed PR, never an automatic merge into production.
 
-## Release-state distinction
+See [UPSTREAM_SYNC_POLICY.md](UPSTREAM_SYNC_POLICY.md) for the implementation plan and audit automation.
 
-- **Internal Windows canary:** packaged for evaluation; build success is not an approved public/commercial release.
-- **Atlas authentication stage:** source code builds, but live database, secrets, HTTP route and end-to-end sign-in are not confirmed.
-- **MIT AtlasBot release:** proposed and not in effect for the inherited source at the time of this document.
+## Public release controls
 
-The repository root's existing license remains authoritative for the inherited source until the transition is properly completed.
+An MIT source licence is **not** equivalent to a production-ready binary. Internal Windows canary artifacts are unsigned and require validation. The Atlas API staging is not yet a live audited login service. Final visual integration, security tests, attribution packaging, signing and release approval are independent gates.

@@ -165,7 +165,9 @@ try {
     SKILLS_ADMIN_TOKEN: randomBytes(32).toString("base64url"),
     SITE_REPORT_HASH_SECRET: randomBytes(32).toString("base64url"),
   };
-  Object.assign(childEnv, testSecrets);
+  // Wrangler does not automatically map process environment variables to Worker bindings.
+  // Inject ephemeral signing material only into this disposable local config, created with
+  // mode 0600 and removed in finally. Never use this pattern for remote environments.
   const local = {
     ...built,
     name: "atlasbot-auth-ci-local",
@@ -176,9 +178,12 @@ try {
     preview_urls: false,
     services: [],
     send_email: [],
-    secrets: { required: Object.keys(testSecrets) },
+    // Do not retain the remote required-secret declarations in this local-only Worker:
+    // they are not populated by setting the Wrangler child process environment.
+    secrets: undefined,
     triggers: { crons: [] },
     vars: {
+      ...testSecrets,
       AUTH_EXPOSE_DEVELOPMENT_CODE: "true",
       EMAIL_SMTP_HOST: "", EMAIL_SMTP_PORT: "", EMAIL_SMTP_USERNAME: "", EMAIL_FROM: "",
       EMAIL_LICENSE_FROM: "", RESEND_API_KEY: "",

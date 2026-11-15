@@ -85,7 +85,7 @@ export const messages = defineMessages("onboarding", {
   "onboarding.choice.subscriptionDetail": "ChatGPT, Claude, or Grok",
   "onboarding.choice.startFreeInstead": "Use free models instead",
   "onboarding.consent.notice": "By continuing, you accept the {terms} and acknowledge the {privacy}.",
-  "onboarding.consent.evaluationOnly": "AtlasBot L0 — internal evaluation only. Do not use personal data, real customer files or production credentials. AtlasBot desktop terms and privacy policy are pending legal publication; this test does not ask you to accept OpenBot terms.",
+  "onboarding.consent.evaluationOnly": "AtlasBot L0 — internal evaluation only. Do not use personal data, real customer files or production credentials. AtlasBot desktop terms and privacy policy are pending legal publication; this test does not ask you to accept third-party terms.",
   "onboarding.consent.analyticsTitle": "Help make AtlasBot better",
   "onboarding.consent.analyticsDetail": "Share usage with your account. Never chats or files.",
   "onboarding.consent.thanksTitle": "Thank you! The team owes you one.",

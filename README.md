@@ -16,6 +16,18 @@ The AtlasBot display identity is being integrated. Final icons and mascots are s
 
 Agents can execute commands and control applications with broad access after first-launch consent. Review the Security section and use trusted tasks.
 
+## Open-source roadmap and acknowledgements
+
+**MIT is the proposed AtlasBot license, not yet the operative license for inherited source.**
+The project owner reports an agreement with the original developers; verification of the exact relicensing and attribution rights is still required. Do not treat the internal installer artifact as a cleared public release.
+
+- [MIT candidate](docs/atlas/MIT_LICENSE_CANDIDATE.md) — prepared for approval, not an active replacement for the root license.
+- [Open-source transition gate](docs/atlas/OPEN_SOURCE_TRANSITION.md) — evidence, third-party rights and release checks.
+- [Inspirations and credits](docs/atlas/INSPIRATIONS_AND_CREDITS.md) — OpenBot source lineage and independent references including OpenAI dots, xAI Grok Bot and Open Cowork.
+
+These product references do not imply affiliation or endorsement.
+
+
 ## Inherited technical reference
 
 The sections below retain original names where they describe existing commands, installation paths, protocols and upstream releases. Upstream installers are not AtlasBot releases. The deleted `Atlas-Bot` repository is not part of the current scope.

@@ -3,7 +3,7 @@
 // CI=true GITHUB_ACTIONS=true bun scripts/atlas-auth-worker-e2e.mjs
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { createHash, generateKeyPairSync, randomBytes, randomUUID } from "node:crypto";
+import { createHash, generateKeyPairSync, randomBytes, randomUUID, verify } from "node:crypto";
 import { once } from "node:events";
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
@@ -36,8 +36,8 @@ const childEnv = {
   CLOUDFLARE_SEND_METRICS: "false",
 };
 
-function check(name, condition) {
-  checks.push({ name, passed: Boolean(condition) });
+function check(name, condition, detail) {
+  checks.push({ name, passed: Boolean(condition), ...(detail ? { detail } : {}) });
   assert.ok(condition, name);
 }
 async function command(args) {
@@ -184,7 +184,23 @@ try {
       hostId: host.hostId, ownerMembershipId: randomUUID(), name: "Atlas CI host", devicePublicKey,
     },
   });
-  check("the account registers its own host through the real route", registered.status === 201);
+  check("the account registers its own host through the real route", registered.status === 201,
+    { status: registered.status, code: /^[a-z0-9_]+$/.test(registered.body?.error?.code ?? "") ? registered.body.error.code : null });
+  const jwks = await request("/.well-known/jwks.json");
+  check("JWKS publishes only the generated public key", jwks.status === 200 &&
+    jwks.body.keys.length === 1 && jwks.body.keys[0].kid === keyId && !("d" in jwks.body.keys[0]));
+  const hostTicket = await request("/v2/remote/hosts/" + host.hostId + "/ticket", {
+    method: "POST", body: { machineToken: registered.body.machineToken },
+  });
+  check("the registered host receives a remote connection ticket", hostTicket.status === 200 &&
+    hostTicket.body.signalUrl === "ws://127.0.0.1:1/v1/signal");
+  const [header, claims, signature] = hostTicket.body.ticket.split(".");
+  const ticketHeader = JSON.parse(Buffer.from(header, "base64url"));
+  const ticketClaims = JSON.parse(Buffer.from(claims, "base64url"));
+  check("the host ticket has a valid ES256 signature and host binding", ticketHeader.alg === "ES256" &&
+    ticketHeader.kid === keyId && ticketClaims.hostId === host.hostId && ticketClaims.role === "host" &&
+    ticketClaims.exp > Date.now() / 1000 && verify("sha256", Buffer.from(header + "." + claims),
+      { key: publicKey, dsaEncoding: "ieee-p1363" }, Buffer.from(signature, "base64url")));
   const badHost = await request("/v1/mobile-auth/ticket", {
     method: "POST", token: owner, body: { host: { ...host, fingerprint: "x".repeat(43) } },
   });
@@ -220,12 +236,16 @@ try {
   check("the desktop revokes its persistent link",
     (await request("/v1/mobile-auth/link?host=" + host.hostId, { method: "DELETE", token: owner })).status === 204);
   check("the revoked persistent link is refused", (await redeem(link.body.link)).status === 401);
+  check("revoking the persistent link ends the linked phone session",
+    (await request("/v1/mobile-auth/session", { token: linked.body.sessionToken })).status === 401);
   check("logout ends the desktop session",
     (await request("/v1/auth/logout", { method: "POST", token: owner })).status === 204);
   check("a logged-out desktop session is refused", (await request("/v1/me", { token: owner })).status === 401);
 } catch (error) {
   // Assertion messages contain only fixed check names and HTTP status codes.
   failure = error instanceof Error ? error.message : "Worker check failed";
+  const detail = checks.find((item) => !item.passed)?.detail;
+  if (detail) failure += " " + JSON.stringify(detail);
 } finally {
   await stopWorker();
   await rm(configPath, { force: true });

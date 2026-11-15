@@ -1,4 +1,5 @@
 import { APP_LOGO_SIZE } from "./app-logo-shape";
+import APPROVED_ATLAS_LOGO from "./atlasbot-approved-logo.png?url";
 
 export type AppLogoAnimation = "none" | "blink" | "look-around" | "surprised";
 export type AppLogoVariant = "production" | "dev" | "preview";
@@ -12,7 +13,7 @@ export interface AppLogoProps {
   class?: string;
 }
 
-const APPROVED_ATLAS_LOGO = new URL("./atlasbot-approved-logo.png", import.meta.url).href;
+
 
 /** Use the approved Atlas A unchanged. No eye animation or approximate vector artwork. */
 export function AppLogo(props: AppLogoProps) {

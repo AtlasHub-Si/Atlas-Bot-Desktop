@@ -39,9 +39,6 @@ jobs:
         run: |
           bun run typecheck:node
           bun run typecheck:renderer
-      - name: Offline agent workspace test with fake ACP runtime
-        shell: pwsh
-        run: bun run test:custom-agents
       - name: Offline local provider discovery against fake servers
         shell: pwsh
         run: bun run test:provider-detection
@@ -71,3 +68,18 @@ jobs:
           retention-days: 7
           if-no-files-found: error
           compression-level: 0
+
+  offline-acp-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout AtlasBot source
+        uses: actions/checkout@v4
+      - name: Configure Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - name: Install desktop dependencies
+        run: bun install --frozen-lockfile --filter '!@openbot/mobile'
+      - name: Validate agent save, ACP session routing and restart on Unix fake executable
+        run: bun run test:custom-agents

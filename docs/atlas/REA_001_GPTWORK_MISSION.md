@@ -11,7 +11,7 @@
 - Auditar `main` + PR [#2](https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/pull/2) (assets) + PR [#3](https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/pull/3) (staging) por separado, sem declarar que PRs em Draft já estão em `main`.
 - Não fazer `merge`, deploy, alterar DNS, chaves, credenciais, produção, VPS da Helena ou os perfis locais do utilizador nesta missão.
 - Usar REA oficial de [morluto/rea](https://github.com/morluto/rea), verificar proveniência e requisitos. Usar REA como **instrumento de evidência**, não como substituto de auditoria manual. Não afirmar que foi executada sem resultados guardados.
-- `LICENSE` e `NOTICE` preservados. A licença upstream **PolyForm Noncommercial 1.0.0** não se converte em MIT por rebranding e pode limitar exploração e distribuição comercial. Solicitar parecer/consentimento quando exigido.
+- `LICENSE` e `NOTICE` preservados. A raiz AtlasBot foi relicenciada para **MIT** na `main` por decisão do responsável e validação do serviço jurídico. Manter as atribuições e licenças de terceiros no `NOTICE`, preservar a origem do código e auditar direitos sobre novas contribuições upstream antes de as importar.
 - Preservar IDs de protocolos internos, `@openbot/*` imports, SQLite e app ID até haver plano de migração e testes de atualização/rollback. Textos e marcas visíveis podem ser substituídos quando aprovados.
 - Não incorporar personagens/avatar assets ainda não aprovados nem inventar versões finais a partir de mockups. A aprovação V0.7 é de **DEV**, não de release.
 

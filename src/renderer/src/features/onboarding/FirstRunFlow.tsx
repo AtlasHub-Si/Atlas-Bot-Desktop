@@ -38,9 +38,6 @@ export interface FirstRunFlowProps extends SetupProviderProps {
 }
 
 const TEAM_SIZE = 7;
-const TERMS_URL = "https://openbot.run/terms";
-const PRIVACY_URL = "https://openbot.run/privacy";
-
 type FirstRunStep = "choose" | "plan" | "computer";
 /** How the user starts: on free models, or on a plan they connect. `null` until they choose. */
 type FirstRunPath = "free" | "plan" | null;
@@ -395,8 +392,7 @@ export function FirstRunFlow(props: FirstRunFlowProps) {
                       current.analyticsTouched = true;
                     })
                   }
-                  onOpenTerms={() => void onboardingPort().openUrl(TERMS_URL)}
-                  onOpenPrivacy={() => void onboardingPort().openUrl(PRIVACY_URL)}
+                  evaluationOnly
                 />
               </Match>
 

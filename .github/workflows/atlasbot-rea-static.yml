@@ -35,11 +35,18 @@ jobs:
           ref: c8c2510ccc3ae85786792c27b24b658630e21c4f
           persist-credentials: false
           path: target
+      - name: Read exact official REA source without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: morluto/rea
+          ref: d74549e495c58eb4a560279fd9f05508401ea0a0
+          persist-credentials: false
+          path: rea-source
       - name: Configure supported Node runtime
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24.22.1
-      - name: Record target and package provenance before tool execution
+      - name: Record exact target and official source provenance
         shell: bash
         run: |
           set -euo pipefail
@@ -52,35 +59,41 @@ jobs:
           printf '%s\n' "$REA_COMMIT" > evidence/rea-reviewed-commit.txt
           node --version > evidence/node-version.txt
           npm --version > evidence/npm-version.txt
-          npm view "rea-agents@$REA_VERSION" --json > evidence/npm-provenance.json
+          test "$(git -C rea-source rev-parse HEAD)" = "$REA_COMMIT"
+          git -C rea-source ls-tree -r HEAD > evidence/rea-source-tree.txt
+          cp rea-source/package.json evidence/rea-package.json
+          cp rea-source/package-lock.json evidence/rea-source-package-lock.json
           node --input-type=module <<'NODE'
           import fs from "node:fs";
-          const meta = JSON.parse(fs.readFileSync("evidence/npm-provenance.json", "utf8"));
-          if (meta.name !== "rea-agents" || meta.version !== process.env.REA_VERSION || meta.gitHead !== process.env.REA_COMMIT) {
-            throw new Error("Official REA version/gitHead does not match the reviewed release commit; refusing execution");
-          }
-          if (!meta.dist?.integrity || new URL(meta.dist.tarball).hostname !== "registry.npmjs.org") {
-            throw new Error("Official npm integrity or registry provenance missing; refusing execution");
-          }
+          const meta = JSON.parse(fs.readFileSync("evidence/rea-package.json", "utf8"));
+          if (meta.name !== "rea-agents" || meta.version !== process.env.REA_VERSION) throw new Error("Reviewed source package version mismatch");
           const paths = JSON.parse(fs.readFileSync("evidence/source-selection.json", "utf8"));
           for (const path of paths) {
             if (typeof path !== "string" || path.startsWith("/") || path.split("/").includes("..")) throw new Error("Invalid selected path");
             fs.accessSync("analysis-target/" + path, fs.constants.R_OK);
           }
           NODE
-      - name: Acquire pinned tool with package lifecycle scripts disabled
+      - name: Acquire locked official tool dependencies without lifecycle scripts
+        shell: bash
+        working-directory: rea-source
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+      - name: Compile reviewed official source without network or account environment
         shell: bash
         run: |
           set -euo pipefail
-          npm install --prefix "$RUNNER_TEMP/atlasbot-rea-tool" --ignore-scripts --omit=optional --no-audit --no-fund "rea-agents@$REA_VERSION"
-          cp "$RUNNER_TEMP/atlasbot-rea-tool/package-lock.json" evidence/tool-package-lock.json
-          node --input-type=module <<'NODE'
-          import fs from "node:fs";
-          const lock = JSON.parse(fs.readFileSync("evidence/tool-package-lock.json", "utf8"));
-          const meta = JSON.parse(fs.readFileSync("evidence/npm-provenance.json", "utf8"));
-          const entry = lock.packages["node_modules/rea-agents"];
-          if (entry?.version !== meta.version || entry.integrity !== meta.dist.integrity) throw new Error("Installed package integrity differs from verified registry metadata");
-          NODE
+          clean_home="$RUNNER_TEMP/atlasbot-rea-home"
+          mkdir -p "$clean_home"
+          node_bin="$(command -v node)"
+          # Explicit reviewed compile steps from the pinned official package.
+          # No prepare, setup, native provider, external model or target app command is run.
+          cd rea-source
+          for script in "scripts/run-typescript.mjs -p tsconfig.build.json" scripts/record-catalog-digests.mjs scripts/record-mcp-catalog.mjs scripts/bundle-runtime.mjs; do
+            # Each value is a fixed reviewed script and fixed optional compiler arguments.
+            read -r -a args <<< "$script"
+            timeout --signal=TERM --kill-after=15s 5m sudo unshare --net -- setpriv --reuid "$(id -u)" --regid "$(id -g)" --init-groups env -i PATH="$PATH" HOME="$clean_home" XDG_CACHE_HOME="$clean_home/.cache" "$node_bin" --max-old-space-size=3072 "${args[@]}"
+          done
       - name: Analyze selected source without network or application execution
         shell: bash
         run: |
@@ -88,7 +101,7 @@ jobs:
           clean_home="$RUNNER_TEMP/atlasbot-rea-home"
           mkdir -p "$clean_home"
           node_bin="$(command -v node)"
-          cli="$RUNNER_TEMP/atlasbot-rea-tool/node_modules/rea-agents/scripts/rea.mjs"
+          cli="$GITHUB_WORKSPACE/rea-source/scripts/rea.mjs"
           test -f "$cli"
           # No target dependency install, user profile, account credentials, browser or application launch.
           # Drop root after creating the isolated network namespace; keep a clean analysis environment.

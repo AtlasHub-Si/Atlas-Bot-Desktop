@@ -6,15 +6,15 @@
 
 [Desktop design PR #2](https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/pull/2) records V0.7 as DEV_APPROVED. [Official V0.7 archive](https://drive.google.com/file/d/1vPg8qi02qOTU3UpUZut9PH0DEFcBse2c/view): SHA-256 `f23e9807bb7051d1dcaa23e7e20846390f9b223b68b5e090ab8827500fb1ef43`. The frozen dual master remains unchanged. An approved asset is not proof of integration at each entry point.
 
-[Visual quick-fix PR #9](https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/pull/9) is a separate branch on PR #8. Engineering checkpoint `dfb973da69f5f51796504ff873006645014ad474` contains 18 target paths from three verified derivatives; registry `build/atlasbot-approved-icons.json`. The official Drive ZIP was downloaded through the owner's authenticated session and matched the recorded archive hash. No local app replacement or Windows GUI acceptance is claimed.
+[Visual quick-fix PR #9](https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/pull/9) is a separate branch on PR #8. Engineering checkpoint `99fdc998a5ad7b927c10fd566073002f5d29356b` contains 19 target paths from three verified derivatives; registry `build/atlasbot-approved-icons.json`. The official Drive ZIP was downloaded through the owner's authenticated session and matched the recorded archive hash. No local app replacement or Windows GUI acceptance is claimed.
 
 | Approved derivative | SHA-256 | Applied targets |
 |---|---|---|
-| `03_icons_desktop/atlasbot-app-icon-512.png` (512 px) | `f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b` | Production/dev/preview PNGs and nine saved logo-color PNGs |
+| `03_icons_desktop/atlasbot-app-icon-512.png` (512 px) | `f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b` | Production/dev/preview PNGs, nine saved logo-color PNGs and the shared static AppLogo PNG |
 | `03_icons_desktop/atlasbot-app.ico` | `b3e5b42bc68fe6af3e8ca224738b66979d7b840fcc8c1c2b2ab773833720479a` | Three variant ICOs, `build/icon.ico`, renderer public favicon |
 | `02_favicons_web/atlasbot-favicon-32.png` (32 px) | `8c04d197d4e48f283a4698b808a455158664468ff7bd5824bfd519b8eb15839e` | Renderer PNG favicon |
 
-ICO internal resolutions are not remeasured by this audit. Shared animated logo, macOS safe-area/template assets and Linux acceptance remain outside this quick-fix checkpoint. Provider/OAuth endpoints remain unchanged. This report does not promote all mascot/motion work to accepted status.
+ICO internal resolutions are not remeasured by this audit. The shared AppLogo now embeds the exact approved PNG as a static SVG image while retaining prop type compatibility. macOS safe-area/template assets and Linux acceptance remain outside this quick-fix checkpoint. Provider/OAuth endpoints remain unchanged. This report does not promote all mascot/motion work to accepted status.
 
 ## Product surfaces
 

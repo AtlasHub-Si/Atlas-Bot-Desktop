@@ -1,0 +1,102 @@
+name: AtlasBot signed Windows candidate (internal only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Exact reviewed commit SHA on main (40 hexadecimal characters)
+        required: true
+        type: string
+      expected_version:
+        description: Version in package.json (for example 0.70.0)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atlasbot-windows-signing
+  cancel-in-progress: false
+
+jobs:
+  signed-candidate:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: windows-latest
+    timeout-minutes: 75
+    environment: atlasbot-windows-signing
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      ATLASBOT_WINDOWS_SIGNER_SUBJECT: ${{ vars.ATLASBOT_WINDOWS_SIGNER_SUBJECT }}
+    steps:
+      - name: Checkout reviewed main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Fail closed without pinned source and protected signing identity
+        shell: pwsh
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          EXPECTED_VERSION: ${{ inputs.expected_version }}
+          CSC_LINK: ${{ secrets.ATLASBOT_WINDOWS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.ATLASBOT_WINDOWS_CSC_KEY_PASSWORD }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          if ($env:EXPECTED_SHA -cnotmatch '^[a-f0-9]{40}$') { throw "Expected SHA must be a full commit hash" }
+          if ($env:GITHUB_SHA -cne $env:EXPECTED_SHA) { throw "Dispatched SHA differs from reviewed main" }
+          $package = Get-Content package.json -Raw | ConvertFrom-Json
+          if ($package.version -cne $env:EXPECTED_VERSION -or $env:EXPECTED_VERSION -notmatch '^\d+\.\d+\.\d+$') { throw "Expected version does not match repository" }
+          if ([string]::IsNullOrWhiteSpace($env:CSC_LINK) -or [string]::IsNullOrWhiteSpace($env:CSC_KEY_PASSWORD)) { throw "Atlas signing secrets are not configured" }
+          if ([string]::IsNullOrWhiteSpace($env:ATLASBOT_WINDOWS_SIGNER_SUBJECT)) { throw "Atlas signing publisher identity is not configured" }
+          if ($env:ATLASBOT_WINDOWS_SIGNER_SUBJECT -notmatch '^ATLAS GLOBAL TECH LTD$|^ATLASHUB DIGITAL LTD$') { throw "Only an Atlas-owned publisher is allowed" }
+          if ($package.productName -cne 'AtlasBot') { throw "Unexpected product name" }
+      - name: Use pinned Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - name: Install dependencies without mobile packages
+        shell: pwsh
+        run: bun install --frozen-lockfile --filter '!@openbot/mobile'
+      - name: Verify licenses, approved icons, and isolated Canary
+        shell: pwsh
+        run: |
+          node scripts/check-atlas-mit-license.mjs
+          node scripts/check-atlas-l0-identity.mjs
+          python scripts/apply-atlasbot-approved-icons.py --verify-installed
+      - name: Build candidate with explicit code signing
+        shell: pwsh
+        env:
+          CSC_LINK: ${{ secrets.ATLASBOT_WINDOWS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.ATLASBOT_WINDOWS_CSC_KEY_PASSWORD }}
+        run: bun run dist:win
+      - name: Verify Authenticode on installer and executable and create hash manifest
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $installer = @(Get-ChildItem dist -File -Filter "AtlasBot-*.exe")
+          if ($installer.Count -ne 1) { throw "Exactly one approved candidate installer expected" }
+          $application = Join-Path (Get-Location) "dist/win-unpacked/AtlasBot.exe"
+          if (-not (Test-Path $application)) { throw "Packaged Windows executable missing" }
+          $checkPaths = @($installer[0].FullName, $application)
+          foreach ($file in $checkPaths) {
+            $sig = Get-AuthenticodeSignature -LiteralPath $file
+            if ($sig.Status -ne 'Valid' -or $null -eq $sig.SignerCertificate) { throw "Missing or invalid Authenticode signature" }
+            if ($sig.SignerCertificate.Subject.IndexOf($env:ATLASBOT_WINDOWS_SIGNER_SUBJECT, [StringComparison]::OrdinalIgnoreCase) -lt 0) {
+              throw "Windows signer does not match Atlas-owned organization"
+            }
+          }
+          $manifest = @($checkPaths | ForEach-Object {
+            $h = Get-FileHash -LiteralPath $_ -Algorithm SHA256
+            [PSCustomObject]@{ filename = Split-Path $_ -Leaf; sha256 = $h.Hash.ToLowerInvariant() }
+          })
+          $manifest | ConvertTo-Json -Depth 3 | Set-Content dist/atlasbot-windows-signature-manifest.json -Encoding utf8
+          "Signed internal candidate only. No public GitHub release, updater or production download approval." >> $env:GITHUB_STEP_SUMMARY
+      - name: Upload signed *internal QA candidate only*
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlasbot-windows-signed-qa-${{ github.run_id }}
+          path: |
+            dist/AtlasBot-*.exe
+            dist/atlasbot-windows-signature-manifest.json
+          if-no-files-found: error
+          retention-days: 14

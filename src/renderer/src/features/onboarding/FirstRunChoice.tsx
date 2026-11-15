@@ -1,8 +1,10 @@
 import { ProviderLogo, type ProviderLogoVariant } from "@openbot/brand";
-import { Button, ChevronRight, Spinner } from "@openbot/ui";
+import { Button, ChevronRight, Spinner, toast } from "@openbot/ui";
 import { AgentAvatar } from "@openbot/ui/features/agents/AgentAvatar";
 import { useText } from "@openbot/ui/text";
 import { createUniqueId, For, Show } from "solid-js";
+import { appPort } from "../../app-port";
+import { ATLAS_PUBLIC_LINKS } from "../../atlas-public-links";
 import { ConsentNotice } from "./AnalyticsConsent";
 import type { OnboardingAvatarVariant } from "./onboarding-avatars";
 
@@ -40,6 +42,9 @@ export function FirstRunChoice(props: FirstRunChoiceProps) {
   const reasonId = createUniqueId();
   const freeDetailId = createUniqueId();
   const planDetailId = createUniqueId();
+  const openReference = (url: string) => {
+    void appPort().openUrl(url).catch(() => toast.error("Unable to open the legal reference."));
+  };
   const freeDescribedBy = () => (props.reason ? `${freeDetailId} ${reasonId}` : freeDetailId);
   return (
     <section class="first-run-choice" aria-labelledby="onboarding-title">
@@ -106,7 +111,21 @@ export function FirstRunChoice(props: FirstRunChoiceProps) {
         </Button>
       </div>
       {props.evaluationOnly ? (
-        <p class="first-run-consent-notice">{t("onboarding.consent.evaluationOnly")}</p>
+        <div class="first-run-consent-notice">
+          <p>{t("onboarding.consent.evaluationOnly")}</p>
+          {/* These are references, not an acceptance of the original operator's terms. */}
+          <nav aria-label="AtlasBot legal references">
+            <Button type="button" variant="link" class="first-run-consent-link" onClick={() => openReference(ATLAS_PUBLIC_LINKS.termsReferences)}>
+              {t("onboarding.consent.termsLink")} · Atlas-SI
+            </Button>
+            <Button type="button" variant="link" class="first-run-consent-link" onClick={() => openReference(ATLAS_PUBLIC_LINKS.websitePrivacy)}>
+              {t("onboarding.consent.privacyLink")} · Atlas-SI
+            </Button>
+            <Button type="button" variant="link" class="first-run-consent-link" onClick={() => openReference(ATLAS_PUBLIC_LINKS.originalCredits)}>
+              OpenBot · original source notices
+            </Button>
+          </nav>
+        </div>
       ) : props.onOpenTerms && props.onOpenPrivacy ? (
         <ConsentNotice onOpenTerms={props.onOpenTerms} onOpenPrivacy={props.onOpenPrivacy} />
       ) : null}

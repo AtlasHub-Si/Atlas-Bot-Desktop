@@ -1,5 +1,4 @@
 import { isKeyOnlyProvider, isKnownAgentProvider } from "@openbot/contracts/agent-providers";
-import { bugReportFormUrl } from "@openbot/contracts/feedback";
 import type {
   AgentProviderId,
   AgentStatus,
@@ -133,13 +132,13 @@ const CODE_LOGIN_POLL_MS = 3000;
  */
 const WEB_EXTERNAL_DESTINATIONS: Partial<Record<ExternalDestination, string>> = {
   "opencode-auth": "https://opencode.ai/auth",
-  feedback: "https://x.com/intent/post?text=Feedback%20for%20OpenBot%20%40norbertbodziony%3A%20",
-  "report-problem": bugReportFormUrl({ platform: "Web client" }),
-  message: "https://x.com/norbertbodziony",
-  changelog: "https://openbot.run/changelog",
-  guides: "https://openbot.run/guides",
-  discord: "https://discord.openbot.run",
-  x: "https://x.com/OpenBot_",
+  feedback: "mailto:sergiomonteiro@atlashub.si?subject=AtlasBot%20feedback",
+  "report-problem": "mailto:sergiomonteiro@atlashub.si?subject=AtlasBot%20issue%20report",
+  message: "mailto:sergiomonteiro@atlashub.si?subject=AtlasBot%20support",
+  changelog: "https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/releases",
+  guides: "https://www.atlas-si.com/pt/guides",
+  // No official AtlasBot X or Discord destination has been approved. Fail closed
+  // through openWebDestination instead of promoting an upstream account.
 };
 
 export function openWebDestination(destination: ExternalDestination): Promise<void> {

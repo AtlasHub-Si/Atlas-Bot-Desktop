@@ -8,6 +8,7 @@ import {
 } from "@openbot/contracts/ipc";
 import type { AppTextKey } from "@openbot/i18n";
 import {
+  Button,
   Item,
   ItemActions,
   ItemContent,
@@ -36,6 +37,8 @@ import { SidebarChatOrderSelect } from "@openbot/ui/features/settings/SidebarCha
 import { useText } from "@openbot/ui/text";
 import { createUniqueId, Show } from "solid-js";
 import { useInstalledFonts } from "../../app-fonts";
+import { appPort } from "../../app-port";
+import { ATLAS_PUBLIC_LINKS } from "../../atlas-public-links";
 import { useAppearanceChoice } from "../../appearance-choice";
 import { useI18n } from "../../i18n-context";
 import { useInterfaceSizeChoice } from "../../interface-size";
@@ -85,6 +88,9 @@ export function SettingsGeneralTab(props: SettingsGeneralTabProps) {
   const interfaceSizeLabel = (value: AppInterfaceSize | undefined) =>
     value === undefined ? "" : format.percent(value / 100);
   /** macOS always keeps running after the window closes. There the switch moves OpenBot from the Dock to the menu bar. */
+  const openLegalReference = (url: string) => {
+    void appPort().openUrl(url).catch(() => toast.error("Unable to open the legal reference."));
+  };
   const backgroundRow = () =>
     props.platform === "darwin"
       ? ({ title: "settings.menuBar.title", description: "settings.menuBar.description" } as const)
@@ -363,6 +369,35 @@ export function SettingsGeneralTab(props: SettingsGeneralTabProps) {
               </Item>
             )}
           </Show>
+        </ItemGroup>
+      </SettingsSection>
+
+      <SettingsSection title="AtlasBot · Legal">
+        <ItemGroup class="settings-modal-card">
+          <Item data-settings-row="atlasbot.legal" class="settings-modal-row">
+            <ItemContent>
+              <ItemTitle>Atlas-SI · Terms &amp; privacy</ItemTitle>
+              <ItemDescription>
+                Atlas website policies and product documentation. Account service terms are under preparation.
+              </ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <Button type="button" variant="link" onClick={() => openLegalReference(ATLAS_PUBLIC_LINKS.termsReferences)}>Terms</Button>
+              <Button type="button" variant="link" onClick={() => openLegalReference(ATLAS_PUBLIC_LINKS.websitePrivacy)}>Privacy</Button>
+            </ItemActions>
+          </Item>
+          <Item data-settings-row="atlasbot.original-notices" class="settings-modal-row">
+            <ItemContent>
+              <ItemTitle>OpenBot · Original source references</ItemTitle>
+              <ItemDescription>
+                Original operator documents remain available for attribution; they are not Atlas account terms.
+              </ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <Button type="button" variant="link" onClick={() => openLegalReference(ATLAS_PUBLIC_LINKS.originalTerms)}>Terms</Button>
+              <Button type="button" variant="link" onClick={() => openLegalReference(ATLAS_PUBLIC_LINKS.originalPrivacy)}>Privacy</Button>
+            </ItemActions>
+          </Item>
         </ItemGroup>
       </SettingsSection>
     </>

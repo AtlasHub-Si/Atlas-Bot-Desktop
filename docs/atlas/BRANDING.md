@@ -25,7 +25,7 @@ Packaging and hosted release feeds point to AtlasHub-Si/Atlas-Bot-Desktop. Insta
 - Complete the file-by-file A/B/C audit and remove inherited external automation safely.
 - Review API, marketplace, invitations, authentication, mobile OTA and provider-runtime endpoints. Changing their domains alone does not provision working Atlas services.
 - Apply final approved assets and verify all desktop platforms.
-- Resolve license permissions before relicensing or deleting required notices.
+- Keep AtlasBot MIT source licensing and attribution notices synchronized with the release build; review future upstream contributions and inherited dependencies separately.
 - Review any history rewrite separately after validation; it does not detach a GitHub fork or erase other refs/copies.
 
 ## Automation

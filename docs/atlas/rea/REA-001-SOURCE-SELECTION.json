@@ -1,6 +1,5 @@
 [
   "package.json",
-  "electron-builder.yml",
   "src/main/app-icon.ts",
   "src/main/main-window.ts",
   "src/main/background-tray.ts",

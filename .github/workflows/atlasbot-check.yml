@@ -20,8 +20,37 @@ jobs:
           bun-version: 1.4.2
       - run: bun install --frozen-lockfile
       - run: node scripts/check-atlas-mit-license.mjs
+      - run: node scripts/check-atlas-staging.mjs
       - run: bun run i18n:check
       - run: bun run typecheck:node
       - run: bun run typecheck:renderer
       - run: bun run typecheck:brand
       - run: bun run build
+
+  api-staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - run: bun install --frozen-lockfile
+      - run: node scripts/check-atlas-mit-license.mjs
+      - run: node scripts/check-atlas-staging.mjs
+      - run: bun run typecheck:api
+      - name: Build isolated Atlas staging Worker
+        working-directory: apps/auth-api
+        env:
+          CLOUDFLARE_ENV: atlas-staging
+        run: bun run build
+      - name: Test real local Worker account and device routes
+        run: bun scripts/atlas-auth-worker-e2e.mjs
+      - name: Upload account and device evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlas-auth-worker-e2e
+          path: .openbot-build/atlas-auth-worker-e2e/report.json
+          if-no-files-found: warn
+          retention-days: 14

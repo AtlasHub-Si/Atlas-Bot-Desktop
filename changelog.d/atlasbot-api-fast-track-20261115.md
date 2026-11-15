@@ -1,0 +1,1 @@
+AtlasBot API staging now has isolated Atlas bindings, Resend OTP delivery, and CI checks for local Worker account and device routes. This change does not deploy a public API or change the desktop account endpoint.

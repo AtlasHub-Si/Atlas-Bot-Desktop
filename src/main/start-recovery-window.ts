@@ -13,7 +13,7 @@ import { recoveryPlushSvg } from "./start-recovery-plush";
 import { isValidSemver } from "./update-service";
 
 const logger = createOpenBotLogger("start-recovery");
-const RELEASES_URL = "https://github.com/nightly-labs/openbot/releases";
+const RELEASES_URL = "https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/releases";
 // `.invalid` never resolves (RFC 2606), so a link that the handler did not stop goes nowhere.
 const ACTION_ORIGIN = "https://openbot.invalid";
 const ACTIONS = ["retry", "previous-version", "export-diagnostics", "open-data-folder", "quit"] as const;

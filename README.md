@@ -12,17 +12,16 @@ AtlasBot is the desktop multi-agent interface and agent-computer workspace in th
 
 Stewardship: [SergioMonteiro-Atlas](https://github.com/sergiomonteiro-atlas). [Change authorization](docs/atlas/AUTHORIZATION.md) · [Branding status](docs/atlas/BRANDING.md) · [Legal information](LEGAL.md).
 
-The AtlasBot display identity is being integrated. Final icons and mascots are still under validation. Existing licenses and required notices remain in [LICENSE](LICENSE) and [NOTICE](NOTICE); this branding change does not relicense inherited code. Default desktop telemetry is disabled. Installed updates are disabled until Atlas releases are validated.
+The AtlasBot display identity is being integrated. Final icons and mascots are still under validation. The AtlasBot source license is [MIT](LICENSE), following the project owner's report of validation by Atlas legal counsel. Third-party copyright and license notices remain in [NOTICE](NOTICE). Default desktop telemetry is disabled. Installed updates are disabled until Atlas releases are validated.
 
 Agents can execute commands and control applications with broad access after first-launch consent. Review the Security section and use trusted tasks.
 
 ## Open-source roadmap and acknowledgements
 
-**MIT is the proposed AtlasBot license, not yet the operative license for inherited source.**
-The project owner reports an agreement with the original developers; verification of the exact relicensing and attribution rights is still required. Do not treat the internal installer artifact as a cleared public release.
+**AtlasBot source: MIT License.** The project owner confirms Atlas legal counsel validated the relicensing arrangement. Third-party dependency licenses remain independent. A successful source license transition does not mean an unsigned internal Windows build is an approved public release.
 
-- [MIT candidate](docs/atlas/MIT_LICENSE_CANDIDATE.md) — prepared for approval, not an active replacement for the root license.
-- [Open-source transition gate](docs/atlas/OPEN_SOURCE_TRANSITION.md) — evidence, third-party rights and release checks.
+- [MIT License](LICENSE) — AtlasBot source distribution.
+- [Open-source transition record](docs/atlas/OPEN_SOURCE_TRANSITION.md) — decision, third-party rights and release checks.
 - [Inspirations and credits](docs/atlas/INSPIRATIONS_AND_CREDITS.md) — OpenBot source lineage and independent references including OpenAI dots, xAI Grok Bot and Open Cowork.
 
 These product references do not imply affiliation or endorsement.

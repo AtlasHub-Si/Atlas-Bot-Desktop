@@ -38,6 +38,8 @@ export interface WorkerBindings {
   EMAIL_FALLBACK?: SendEmail;
   EMAIL_DELIVERY_WEBHOOK_URL?: string;
   EMAIL_DELIVERY_WEBHOOK_SECRET?: string;
+  /** Scoped Atlas-only Resend API key, configured in atlas-staging as a Worker secret. */
+  RESEND_API_KEY?: string;
   SKILLS_ADMIN_TOKEN?: string;
   SITE_OPERATIONS_ADMIN_TOKEN?: string;
   SERVER_CLAIMS_ADMIN_TOKEN?: string;

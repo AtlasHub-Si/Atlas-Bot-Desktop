@@ -15,7 +15,8 @@ const pt = source("packages/i18n/src/messages/pt/onboarding.ts");
 
 assert.ok(prompt.includes("ATLASBOT_PLATFORM_CONTEXT"));
 assert.ok(prompt.includes("You are a persistent local AtlasBot teammate."));
-assert.ok(prompt.includes("originally developed for OpenBot by Synthetify Labs"));
+assert.ok(prompt.includes("Do not introduce unrelated source-code provenance into ordinary responses."));
+assert.ok(prompt.includes("refer to the repository LICENSE and NOTICE"));
 assert.ok(!prompt.includes("You are a persistent local OpenBot teammate."));
 assert.ok(prompt.includes("openbot.tool_call"), "Internal compatibility tools were renamed unexpectedly.");
 assert.ok(!prompt.includes("call openbot.send_feedback unasked"), "Unsolicited feedback must be disabled.");

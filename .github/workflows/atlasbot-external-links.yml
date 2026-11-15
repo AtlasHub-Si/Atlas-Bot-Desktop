@@ -1,0 +1,37 @@
+name: AtlasBot external destinations audit
+
+on:
+  pull_request:
+    paths:
+      - src/**
+      - apps/**
+      - packages/ui/**
+      - remote/api/**
+      - package.json
+      - electron-builder.yml
+      - scripts/atlas-egress-audit.mjs
+      - .github/workflows/atlasbot-external-links.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Inventory static external destinations and origin references
+        run: node scripts/atlas-egress-audit.mjs
+      - name: Preserve concise audit metadata
+        run: |
+          cat .openbot-build/atlas-egress-audit/report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: atlasbot-static-external-destinations
+          path: .openbot-build/atlas-egress-audit
+          if-no-files-found: error
+          retention-days: 30

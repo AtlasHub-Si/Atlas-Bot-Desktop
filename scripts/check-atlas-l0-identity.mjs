@@ -18,6 +18,9 @@ assert.ok(prompt.includes("You are a persistent local AtlasBot teammate."));
 assert.ok(prompt.includes("originally developed for OpenBot by Synthetify Labs"));
 assert.ok(!prompt.includes("You are a persistent local OpenBot teammate."));
 assert.ok(prompt.includes("openbot.tool_call"), "Internal compatibility tools were renamed unexpectedly.");
+assert.ok(!prompt.includes("call openbot.send_feedback unasked"), "Unsolicited feedback must be disabled.");
+assert.ok(prompt.includes("do not automatically send feedback or logs"), "Atlas L0 must require consent before feedback.");
+
 assert.ok(flow.includes("evaluationOnly"));
 assert.ok(choice.includes("onboarding.consent.evaluationOnly"));
 for (const [path, content] of [

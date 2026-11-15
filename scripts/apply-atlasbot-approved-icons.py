@@ -4,10 +4,6 @@ import argparse
 import hashlib
 import json
 import stat
-import urllib.request
-import urllib.parse
-import http.cookiejar
-from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from zipfile import ZipFile
 
@@ -35,51 +31,6 @@ def safe_target(root, relative):
         if item.is_symlink():
             raise ValueError("Target must not use a symlink")
     return target
-
-class DownloadForm(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.action = None
-        self.fields = {}
-        self.active = False
-
-    def handle_starttag(self, tag, attrs):
-        attrs = dict(attrs)
-        if tag == "form" and attrs.get("id") == "download-form":
-            self.active = True
-            self.action = attrs.get("action")
-        elif self.active and tag == "input" and attrs.get("name"):
-            self.fields[attrs["name"]] = attrs.get("value", "")
-
-    def handle_endtag(self, tag):
-        if tag == "form":
-            self.active = False
-
-def download(destination):
-    # Follow Google's public download confirmation form, then enforce the frozen archive hash.
-    url = "https://drive.google.com/uc?export=download&id=" + DRIVE_FILE_ID
-    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
-    for attempt in range(2):
-        request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 AtlasBot-Brand-CI/1.0"})
-        with opener.open(request, timeout=90) as response:
-            data = response.read(15_000_001)
-            content_type = response.headers.get("Content-Type", "")
-        if len(data) <= 15_000_000 and digest(data) == ARCHIVE_SHA256:
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(data)
-            return
-        print(json.dumps({"downloadAttempt": attempt + 1, "bytes": len(data),
-                          "contentType": content_type, "sha256": digest(data)}))
-        if attempt == 0 and "text/html" in content_type:
-            form = DownloadForm()
-            form.feed(data.decode("utf-8", errors="replace"))
-            parsed = urllib.parse.urlparse(form.action or "")
-            if (parsed.scheme == "https" and parsed.hostname == "drive.usercontent.google.com"
-                    and parsed.path == "/download" and form.fields.get("id") == DRIVE_FILE_ID):
-                url = form.action + "?" + urllib.parse.urlencode(form.fields)
-                continue
-        raise ValueError("Downloaded pack does not match the approved V0.7 SHA-256")
-    raise ValueError("Download confirmation did not return the approved pack")
 
 def run(root, archive):
     if digest(archive.read_bytes()) != ARCHIVE_SHA256:
@@ -140,13 +91,25 @@ def run(root, archive):
     (output / "asset-integrity.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"passed": True, "assets": len(destinations), "archiveSha256": ARCHIVE_SHA256}))
 
+def verify_installed(root):
+    registry = json.loads((root / "build/atlasbot-approved-icons.json").read_text(encoding="utf-8"))
+    if registry["archiveSha256"] != ARCHIVE_SHA256:
+        raise ValueError("Unexpected approved archive registry")
+    for record in registry["assets"]:
+        target = safe_target(root, record["path"])
+        if digest(target.read_bytes()) != record["sha256"]:
+            raise ValueError("Installed icon checksum mismatch: " + record["path"])
+    output = root / ".openbot-build/atlas-icons"
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "asset-integrity.json").write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"passed": True, "assets": len(registry["assets"]), "archiveSha256": ARCHIVE_SHA256}))
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path)
-    parser.add_argument("--download", action="store_true")
+    parser.add_argument("--verify-installed", action="store_true")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
-    archive = args.archive or root / ".openbot-build/atlas-icons/approved-v07.zip"
-    if args.download:
-        download(archive)
-    run(root, archive)
+    if args.archive:
+        run(root, args.archive)
+    verify_installed(root)

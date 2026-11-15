@@ -22,9 +22,9 @@ jobs:
     steps:
       - name: Checkout AtlasBot MIT source
         uses: actions/checkout@v4
-      - name: Apply SHA-pinned approved V0.7 icons
+      - name: Verify committed approved V0.7 icons
         shell: pwsh
-        run: python scripts/apply-atlasbot-approved-icons.py --download
+        run: python scripts/apply-atlasbot-approved-icons.py --verify-installed
       - name: Configure Bun
         uses: oven-sh/setup-bun@v2
         with:

@@ -87,7 +87,7 @@ export const messages = {
   "onboarding.choice.subscriptionDetail": "ChatGPT, Claude ou Grok",
   "onboarding.choice.startFreeInstead": "Prefiro modelos gratuitos",
   "onboarding.consent.notice": "Ao continuar, você aceita os {terms} e declara ter lido a {privacy}.",
-  "onboarding.consent.evaluationOnly": "AtlasBot L0 — apenas avaliação interna. Não utilize dados pessoais, ficheiros de clientes ou credenciais de produção. Os termos e a política de privacidade do Desktop AtlasBot ainda aguardam publicação; este teste não solicita aceitação dos termos OpenBot.",
+  "onboarding.consent.evaluationOnly": "AtlasBot L0 — apenas avaliação interna. Não utilize dados pessoais, ficheiros de clientes ou credenciais de produção. Os termos e a política de privacidade do Desktop AtlasBot ainda aguardam publicação; este teste não solicita aceitação de termos de terceiros.",
   "onboarding.consent.analyticsTitle": "Ajude a melhorar o AtlasBot",
   "onboarding.consent.analyticsDetail": "Compartilhe o uso com sua conta. Nunca chats ou arquivos.",
   "onboarding.consent.thanksTitle": "Obrigado! A equipe fica te devendo uma.",

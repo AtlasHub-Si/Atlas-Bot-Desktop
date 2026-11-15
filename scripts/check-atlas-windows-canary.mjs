@@ -19,15 +19,16 @@ assert.match(builder, /^productName:\s*AtlasBot$/m, "App display name must be At
 assert.match(builder, /^\s*owner:\s*AtlasHub-Si$/m, "Update owner must not be upstream.");
 assert.match(builder, /^\s*repo:\s*Atlas-Bot-Desktop$/m, "Update repo must not be upstream.");
 
-assert.match(builder, /^appId: si\\.atlashub\\.atlasbot\\.canary$/m);
-assert.match(builder, /^\\s*- atlasbot-canary$/m);
+assert.ok(builder.includes("appId: si.atlashub.atlasbot.canary"));
+assert.ok(builder.includes("- atlasbot-canary"));
 assert.ok(runtime.includes('app.setPath("userData", join(app.getPath("appData"), "AtlasBot Canary"))'));
 assert.ok(runtime.includes('app.setAppUserModelId("si.atlashub.atlasbot.canary")'));
 assert.ok(runtime.includes('app.setAsDefaultProtocolClient("atlasbot-canary")'));
 assert.ok(!runtime.includes('app.setAsDefaultProtocolClient("openbot")'));
 assert.ok(store.includes('basename(userDataPath) === "AtlasBot Canary"'));
-assert.ok(!nsis.includes('Software\\\\Classes\\\\openbot'), "Installer must not register upstream protocol.");
-assert.ok(!nsis.includes('$APPDATA\\\\OpenBot'), "Installer must not manage upstream user data.");
-assert.ok(!nsis.includes('$PROFILE\\\\OpenBot'), "Installer must not manage upstream workspace directory.");
+const slash = String.fromCharCode(92);
+assert.ok(!nsis.includes("Classes" + slash + "openbot"), "Installer must not register upstream protocol.");
+assert.ok(!nsis.includes("$APPDATA" + slash + "OpenBot"), "Installer must not manage upstream user data.");
+assert.ok(!nsis.includes("$PROFILE" + slash + "OpenBot"), "Installer must not manage upstream workspace directory.");
 console.log("AtlasBot canary checks: separate installer identity, local profile, workspace and release metadata PASS.");
 console.log("NOTE: This is a static guard, not a full egress audit or runtime test.");

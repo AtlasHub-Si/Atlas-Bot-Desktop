@@ -43,6 +43,7 @@ jobs:
         working-directory: apps/auth-api
         env:
           CLOUDFLARE_ENV: atlas-staging
+          CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: "false"
         run: bun run build
       - name: Test real local Worker account and device routes
         run: bun scripts/atlas-auth-worker-e2e.mjs

@@ -36,6 +36,7 @@ const childEnv = {
   NO_COLOR: "1",
   WRANGLER_SEND_METRICS: "false",
   CLOUDFLARE_SEND_METRICS: "false",
+  CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: "false",
 };
 
 function check(name, condition, detail) {
@@ -83,6 +84,10 @@ function captureDiagnostic(chunk) {
     if (d1) diagnostics.push({ subsystem: "D1", failure: d1[1], operation: d1[2], retry: d1[3] });
     const account = /Account service request failed: auth\/[a-f0-9]+ ([A-Za-z][A-Za-z0-9]*)/.exec(line);
     if (account) diagnostics.push({ subsystem: "account", tag: account[1] });
+    if (line.includes("Remote ticket signing is not configured")) diagnostics.push({ subsystem: "signer", tag: "missing_binding" });
+    if (line.includes("REMOTE_TICKET_PRIVATE_JWK is invalid")) diagnostics.push({ subsystem: "signer", tag: "invalid_private" });
+    if (line.includes("REMOTE_TICKET_PUBLIC_JWKS is invalid")) diagnostics.push({ subsystem: "signer", tag: "invalid_public" });
+    if (line.includes("The public JWKS does not contain the active key")) diagnostics.push({ subsystem: "signer", tag: "missing_active_key" });
   }
 }
 async function startWorker() {
@@ -152,6 +157,13 @@ try {
   // is read or changed. No mail transport is configured; local OTP responses are test data.
   const { publicKey, privateKey } = generateKeyPairSync("ec", { namedCurve: "prime256v1" });
   const keyId = "atlas-ci-local";
+  const testSecrets = {
+    REMOTE_TICKET_PRIVATE_JWK: JSON.stringify({ ...privateKey.export({ format: "jwk" }), kid: keyId }),
+    REMOTE_TICKET_PUBLIC_JWKS: JSON.stringify({ keys: [{ ...publicKey.export({ format: "jwk" }), kid: keyId }] }),
+    SKILLS_ADMIN_TOKEN: randomBytes(32).toString("base64url"),
+    SITE_REPORT_HASH_SECRET: randomBytes(32).toString("base64url"),
+  };
+  Object.assign(childEnv, testSecrets);
   const local = {
     ...built,
     name: "atlasbot-auth-ci-local",
@@ -161,7 +173,7 @@ try {
     preview_urls: false,
     services: [],
     send_email: [],
-    secrets: { required: [] },
+    secrets: { required: Object.keys(testSecrets) },
     triggers: { crons: [] },
     vars: {
       AUTH_EXPOSE_DEVELOPMENT_CODE: "true",
@@ -170,13 +182,9 @@ try {
       SITE_PUBLISH_ENABLED: "false", SITE_COOKIE_ISOLATION_READY: "false",
       HOSTED_SERVERS_ENABLED: "false", HOSTED_SERVERS_ALLOWED_USER_IDS: "",
       REMOTE_TICKET_KEY_ID: keyId,
-      REMOTE_TICKET_PRIVATE_JWK: JSON.stringify({ ...privateKey.export({ format: "jwk" }), kid: keyId }),
-      REMOTE_TICKET_PUBLIC_JWKS: JSON.stringify({ keys: [{ ...publicKey.export({ format: "jwk" }), kid: keyId }] }),
       REMOTE_SIGNAL_URL: "ws://127.0.0.1:1/v1/signal",
       REMOTE_SIGNAL_HOMES: "", REMOTE_AUTH_WEBHOOK_URL: "", REMOTE_AUTH_WEBHOOK_URLS: "",
       SIGNAL_ENTRY_ZONE_ID: "", GITHUB_APP_CLIENT_ID: "",
-      SKILLS_ADMIN_TOKEN: randomBytes(32).toString("base64url"),
-      SITE_REPORT_HASH_SECRET: randomBytes(32).toString("base64url"),
     },
     d1_databases: built.d1_databases.map((db) => ({ ...db, migrations_dir: join(app, "migrations") })),
   };
@@ -194,7 +202,7 @@ try {
   const host = { hostId: randomUUID(), fingerprint: createHash("sha256").update(devicePublicKey).digest("base64url") };
   const jwks = await request("/.well-known/jwks.json");
   check("JWKS publishes only the generated public key", jwks.status === 200 &&
-    jwks.body.keys.length === 1 && jwks.body.keys[0].kid === keyId && !("d" in jwks.body.keys[0]));
+    jwks.body.keys.length === 1 && jwks.body.keys[0].kid === keyId && !("d" in jwks.body.keys[0]), { status: jwks.status, hasKeys: Array.isArray(jwks.body?.keys) });
   const registered = await request("/v2/remote/hosts/register", {
     method: "POST", token: owner, body: {
       hostId: host.hostId, ownerMembershipId: randomUUID(), name: "Atlas CI host", devicePublicKey,

@@ -1222,11 +1222,18 @@ export async function createApplicationServices({
       }),
   });
   teardown.push(TEARDOWN_ORDER.agentDock, "the agent dock", () => agentDock.destroy());
+  // Limited to the deliberately isolated, unpackaged-ineligible L0 Windows evaluation
+  // profile. Never use a local identity as a cloud credential or remote host authorization.
+  const localOnlyL0 =
+    app.isPackaged &&
+    process.platform === "win32" &&
+    app.getPath("userData") === join(app.getPath("appData"), "AtlasBot Canary");
   const centralAuthApiUrl = readCentralAuthApiUrl(
     process.env.OPENBOT_AUTH_API_URL,
     app.isPackaged ? "https://api-test.atlas-si.com" : "http://127.0.0.1:3100",
   );
   const centralAuth = new CentralAuthManager({
+    localOnlyL0,
     apiUrl: centralAuthApiUrl,
     mobileConnectApiUrl: readMobileConnectApiUrl(process.env.OPENBOT_MOBILE_AUTH_API_URL, centralAuthApiUrl),
     storagePath: join(app.getPath("userData"), CENTRAL_AUTH_FILE),

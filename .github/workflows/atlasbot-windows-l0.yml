@@ -44,7 +44,7 @@ jobs:
         run: bun run dist:win
       - name: Verify unpacked Windows app
         shell: pwsh
-        run: bun run verify:package:win
+        run: node scripts/verify-atlas-windows-package.mjs
       - name: Record installer name, size and SHA-256
         shell: pwsh
         run: |

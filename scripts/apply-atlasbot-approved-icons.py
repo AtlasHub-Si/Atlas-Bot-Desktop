@@ -5,6 +5,9 @@ import hashlib
 import json
 import stat
 import urllib.request
+import urllib.parse
+import http.cookiejar
+from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 from zipfile import ZipFile
 
@@ -33,16 +36,50 @@ def safe_target(root, relative):
             raise ValueError("Target must not use a symlink")
     return target
 
+class DownloadForm(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.action = None
+        self.fields = {}
+        self.active = False
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "form" and attrs.get("id") == "download-form":
+            self.active = True
+            self.action = attrs.get("action")
+        elif self.active and tag == "input" and attrs.get("name"):
+            self.fields[attrs["name"]] = attrs.get("value", "")
+
+    def handle_endtag(self, tag):
+        if tag == "form":
+            self.active = False
+
 def download(destination):
-    # Public owner-shared archive. A non-ZIP or changed response fails the pinned SHA check.
-    url = "https://drive.usercontent.google.com/download?id=" + DRIVE_FILE_ID + "&export=download&confirm=t"
-    request = urllib.request.Request(url, headers={"User-Agent": "AtlasBot-Brand-CI/1.0"})
-    with urllib.request.urlopen(request, timeout=90) as response:
-        data = response.read(15_000_001)
-    if len(data) > 15_000_000 or digest(data) != ARCHIVE_SHA256:
+    # Follow Google's public download confirmation form, then enforce the frozen archive hash.
+    url = "https://drive.google.com/uc?export=download&id=" + DRIVE_FILE_ID
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    for attempt in range(2):
+        request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 AtlasBot-Brand-CI/1.0"})
+        with opener.open(request, timeout=90) as response:
+            data = response.read(15_000_001)
+            content_type = response.headers.get("Content-Type", "")
+        if len(data) <= 15_000_000 and digest(data) == ARCHIVE_SHA256:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(data)
+            return
+        print(json.dumps({"downloadAttempt": attempt + 1, "bytes": len(data),
+                          "contentType": content_type, "sha256": digest(data)}))
+        if attempt == 0 and "text/html" in content_type:
+            form = DownloadForm()
+            form.feed(data.decode("utf-8", errors="replace"))
+            parsed = urllib.parse.urlparse(form.action or "")
+            if (parsed.scheme == "https" and parsed.hostname == "drive.usercontent.google.com"
+                    and parsed.path == "/download" and form.fields.get("id") == DRIVE_FILE_ID):
+                url = form.action + "?" + urllib.parse.urlencode(form.fields)
+                continue
         raise ValueError("Downloaded pack does not match the approved V0.7 SHA-256")
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_bytes(data)
+    raise ValueError("Download confirmation did not return the approved pack")
 
 def run(root, archive):
     if digest(archive.read_bytes()) != ARCHIVE_SHA256:

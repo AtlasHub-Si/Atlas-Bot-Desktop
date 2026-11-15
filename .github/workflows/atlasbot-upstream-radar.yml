@@ -1,0 +1,40 @@
+name: AtlasBot upstream radar
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/atlasbot-upstream-radar.yml"
+      - "scripts/atlas-upstream-radar.sh"
+      - "docs/atlas/UPSTREAM_SYNC_POLICY.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atlasbot-upstream-radar-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inspect-upstream:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout AtlasBot history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Audit original upstream (fetch only, never execute)
+        shell: bash
+        run: bash scripts/atlas-upstream-radar.sh
+      - name: Save change inventory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlasbot-upstream-radar-${{ github.run_number }}
+          path: upstream-report/
+          retention-days: 14
+          if-no-files-found: warn

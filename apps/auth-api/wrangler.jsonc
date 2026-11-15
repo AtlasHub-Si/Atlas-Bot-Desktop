@@ -175,6 +175,7 @@
       "triggers": { "crons": [] },
       "secrets": {
         "required": [
+          "RESEND_API_KEY",
           "SKILLS_ADMIN_TOKEN",
           "SITE_REPORT_HASH_SECRET",
           "REMOTE_TICKET_PRIVATE_JWK",
@@ -187,7 +188,7 @@
         "EMAIL_SMTP_HOST": "",
         "EMAIL_SMTP_PORT": "",
         "EMAIL_SMTP_USERNAME": "",
-        "EMAIL_FROM": "",
+        "EMAIL_FROM": "no-reply@atlas-si.com",
         "EMAIL_LICENSE_FROM": "",
         "SITE_PUBLISH_ENABLED": "false",
         "SITE_COOKIE_ISOLATION_READY": "false",

@@ -11,7 +11,7 @@ The workflow `.github/workflows/atlasbot-windows-l0.yml` uses a Windows GitHub r
 1. Install desktop dependencies without the Expo/React Native mobile workspace.
 2. Assert MIT source metadata and Atlas default auth / Windows userData / workspace / protocol isolation.
 3. Run Desktop and renderer typechecks on Windows.
-4. Run offline provider-discovery E2E on Windows and the Unix-shell fake ACP agent E2E on a separate Linux CI job; the fake ACP executable relies on a POSIX shell and is not a native Windows runtime test.
+4. Run Unix-shell fake ACP agent E2E and fake-provider discovery E2E on a separate Linux CI job; the tests use POSIX shell/extensionless fake executables and are **not** Windows-native runtime tests.
 5. Build the NSIS `AtlasBot-*-x64.exe` and check the packaged files.
 6. Publish a short-lived **private Actions artifact**, with SHA-256, not a public release.
 
@@ -35,7 +35,7 @@ A successful build and fake-agent E2E do **not** prove that the installed GUI or
 
 ## PASS criteria
 
-- [ ] CI `L0`: Windows typecheck + Windows provider detection + Linux fake-agent contract + Windows installer/package inspection all green
+- [ ] CI `L0`: Windows typecheck + Linux fake-provider/agent contracts + Windows installer/package inspection all green
 - [ ] Installed Windows GUI actually opens without a cloud account
 - [ ] Standalone canary profile/workspaces, original OpenBot not altered
 - [ ] Create one local agent and complete one disposable task using a known-safe provider

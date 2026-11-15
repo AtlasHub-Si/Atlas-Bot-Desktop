@@ -1,61 +1,22 @@
-# Contributing to OpenBot
+# Contributing to AtlasBot
 
-Thanks for helping improve OpenBot. Pull requests with clear verification are the easiest to
-review.
+AtlasBot is developed by the AtlasHub.SI community. The root repository source is licensed under [MIT](LICENSE); third-party component licenses remain in [NOTICE](NOTICE). For provenance and accepted external changes, see [upstream policy](docs/atlas/UPSTREAM_SYNC_POLICY.md).
 
-## What you can send
+## Scope and submission
 
-These rules apply to people outside the `nightly-labs` organization. Organization members and
-users with write access to this repository skip them. So do their agents, which act as
-`openbotgit[bot]` through the OpenBot GitHub App.
-
-You can open a pull request without an issue for:
-
-- Bug fixes.
-- Small improvements, alignments, and clean-ups that do not change how a feature works.
-- Translations and documentation.
-- A new provider, MCP app, or connector. Follow
-  [Integrations](docs/architecture/integrations.md) ("Add a provider", "Add an application",
-  "Add a connector").
-
-These need an issue with the `approved` label before you write code:
-
-- New features.
-- Changes to how an existing feature works or looks.
-- Large refactors, new dependencies, and changes to migrations, IPC contracts, the Team API,
-  security boundaries, or CI.
-
-To propose one, open a [feature request](https://github.com/nightly-labs/openbot/issues/new?template=feature_request.yml)
-and wait. A maintainer adds `approved` when the change fits OpenBot. Then link the issue in your
-pull request with `Closes #<number>`.
-
-The `Contribution policy` workflow applies these labels:
-
-| Label | Meaning |
-| --- | --- |
-| `external` | The author is outside the organization. The workflow adds it. |
-| `needs-approved-issue` | A maintainer decided that the pull request needs an approved issue. The `Contribution policy` check fails until the pull request closes an issue with the `approved` label. If it does not do this in 7 days, the workflow closes the pull request. |
-| `approved` | A maintainer accepts the issue. Pull requests that close it pass the check. |
-| `policy-exempt` | A maintainer turned off the check for this pull request. |
-
-A maintainer who reopens a closed pull request starts a new 7-day period.
-
-## Before opening an issue
-
-- Use an issue form. The workflow closes an issue from outside the organization that does not
-  come from a form or that has an empty required answer.
-- Search existing issues first.
-- Use Discussions for questions and for ideas that are not yet a specific request.
-- Use the security process in `SECURITY.md` for vulnerabilities.
-- Remove credentials, private file paths, conversation contents, and personal data from diagnostics.
-- For a bug, give the platform, the OpenBot version, the operating system, the provider and its CLI
-  version, the exact steps, and the expected and actual results. The bug form asks for each one.
+- Use the current repository `AtlasHub-Si/Atlas-Bot-Desktop` rather than the original developers' repository.
+- Open a pull request with clear purpose, security impact, test evidence, screenshots when the UI changes, and rollback considerations.
+- Issues are not currently enabled in this repository. For a major feature, obtain maintainer agreement in an existing discussion or planning document before implementation.
+- Preserve AtlasBot identity, characters and brand assets; do not re-enable original OpenBot account/Signal/update endpoints.
+- New upstream-derived code must be reviewed for rights, licensing, third-party notices, and changes to model runtimes before integration.
+- Never include secrets, personal data, private log exports, credential material, or production data in commits.
+- Security-sensitive code requires maintainer review and testing of the Electron sandbox, IPC sender checks, permissions, account boundaries, and remote host access.
 
 ## Development setup
 
 ```bash
-git clone https://github.com/nightly-labs/openbot.git
-cd openbot
+git clone https://github.com/AtlasHub-Si/Atlas-Bot-Desktop.git
+cd Atlas-Bot-Desktop
 bun install --frozen-lockfile
 bun run check
 bun run dev
@@ -183,19 +144,7 @@ reason in the `bunfig.toml` comment. `bun pm untrusted` shows the blocked script
 
 ## Licensing
 
-Each author of a pull request must sign the
-[OpenBot Contributor License Agreement](CLA.md). You keep the copyright in your contributions and
-give Synthetify Labs sp. z o.o. a copyright and patent license to use them. Organization members,
-users with write access to this repository and bots do not sign.
-
-To sign, download the agreement as a PDF from [openbot.run/cla](https://openbot.run/cla). Fill it
-in, sign it, and send it to licenses@openbot.run with your GitHub login and the link to your pull
-request. A coding agent never signs or sends the agreement for you. You sign one time. When you
-must sign, the `CLA` workflow adds a comment to your pull request and sets the `CLA` status to
-failed. A maintainer records your signature with `bun scripts/cla.ts record <login> <pull request>`,
-which adds it to the `cla-signatures` branch and sets the status again. If you signed the OpenBot
-Contributor Assignment Agreement 1.0, you do not sign again. The rules are in `scripts/cla.ts`. Each
-commit author email must be linked to a GitHub account, so that the workflow can find who must sign.
+Contributions intentionally submitted to the AtlasBot repository are accepted under the root **MIT License**, unless an alternative arrangement is explicitly agreed with the maintainers before submission. The previous OpenBot Contributor License Agreement is not required for contributions to this repository. The original upstream project's agreements are separate and remain under its own governance.
 
 A contribution must be your original work, or you must identify the source and the license of the
 material that you did not write. Do not submit copied UI assets, proprietary code, private plugin

@@ -1,0 +1,75 @@
+name: AtlasBot Windows internal canary
+
+on:
+  push:
+    branches:
+      - feat/atlasbot-windows-canary-20261114
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atlasbot-win-canary-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-canary:
+    runs-on: windows-2025
+    timeout-minutes: 90
+    env:
+      ATLASBOT_ENABLE_UPDATES: "0"
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - name: Checkout AtlasBot source
+        uses: actions/checkout@v4
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - name: Report available Windows disk space
+        shell: pwsh
+        run: |
+          Get-PSDrive -PSProvider FileSystem | Select-Object Name, @{N='FreeGB';E={[math]::Round($_.Free / 1GB, 2)}} | Format-Table
+
+      - name: Install desktop dependencies without the mobile workspace
+        shell: pwsh
+        run: bun install --frozen-lockfile --filter '!@openbot/mobile'
+
+      - name: Verify Atlas-only default auth endpoint
+        shell: pwsh
+        run: node scripts/check-atlas-windows-canary.mjs
+
+      - name: Typecheck Electron main and renderer
+        shell: pwsh
+        run: |
+          bun run typecheck:node
+          bun run typecheck:renderer
+
+      - name: Build NSIS Windows x64 internal evaluation package
+        shell: pwsh
+        run: bun run dist:win
+
+      - name: Inspect generated Windows installer and record SHA-256
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem dist -File -Filter '*x64.exe' -ErrorAction SilentlyContinue)
+          if ($files.Count -eq 0) { throw "No Windows x64 installer was generated." }
+          $hashes = @($files | Get-FileHash -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $([System.IO.Path]::GetFileName($_.Path))" })
+          $hashes | Out-File -FilePath dist/sha256.txt -Encoding utf8
+          $files | Select-Object Name, Length | Format-Table
+          Get-Content dist/sha256.txt
+
+      - name: Retain canary build as short-lived CI artifact (not a release)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlasbot-windows-canary-internal-${{ github.run_number }}
+          path: |
+            dist/*x64.exe
+            dist/sha256.txt
+          if-no-files-found: error
+          retention-days: 2
+          compression-level: 0

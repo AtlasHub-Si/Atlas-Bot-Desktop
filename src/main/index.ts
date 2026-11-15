@@ -313,11 +313,11 @@ if (commandLineUserDataDirectory) {
 }
 // Keep the existing workspace and Chromium profile when the public product name changes.
 if (app.isPackaged && !commandLineUserDataDirectory) {
-  app.setPath("userData", join(app.getPath("appData"), "OpenBot"));
+  app.setPath("userData", join(app.getPath("appData"), "AtlasBot Canary"));
 }
 app.setName("AtlasBot");
 app.enableSandbox();
-if (process.platform === "win32") app.setAppUserModelId("app.openbot.desktop");
+if (process.platform === "win32") app.setAppUserModelId("si.atlashub.atlasbot.canary");
 // Linux: on Wayland, Chromium waits until a monitor is on before it starts. With none, start again on
 // XWayland. Before the single-instance lock, so that the new process can take it. A parent process or
 // systemd watches the process, the output and the input of a headless server, so it does not restart.
@@ -1187,7 +1187,7 @@ async function presentApplication(): Promise<void> {
     process.platform === "linux" ||
     ((process.platform === "darwin" || process.platform === "win32") && app.isPackaged)
   ) {
-    if (!app.setAsDefaultProtocolClient("openbot")) {
+    if (!app.setAsDefaultProtocolClient("atlasbot-canary")) {
       logger.warn("Unable to register the openbot:// scheme. Invitation links will not open OpenBot.");
     }
   }

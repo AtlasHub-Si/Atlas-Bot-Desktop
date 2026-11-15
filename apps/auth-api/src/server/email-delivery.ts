@@ -1,4 +1,7 @@
-import { Cause, Effect, Exit, Option, Result, Schema } from "effect";
+import { Cause, Effect, Exit, Option, Result } from "effect";
+import { EmailDeliveryError } from "./email-delivery-error";
+import { createResendEmailCodeDelivery } from "./atlas-resend-email-delivery";
+export { EmailDeliveryError } from "./email-delivery-error";
 import type { AccountAnalytics, EmailKind, EmailResult } from "./account-analytics";
 import {
   AMBIGUOUS_DELIVERY_ERRORS,
@@ -24,10 +27,6 @@ import type {
   WorkerBindings,
 } from "./types";
 
-export class EmailDeliveryError extends Schema.TaggedError<EmailDeliveryError>()("EmailDeliveryError", {
-  message: Schema.String,
-}) {}
-
 export type EmailDeliveryBindings = Pick<
   WorkerBindings,
   | "EMAIL_SMTP_HOST"
@@ -40,6 +39,7 @@ export type EmailDeliveryBindings = Pick<
   | "EMAIL_FALLBACK"
   | "EMAIL_DELIVERY_WEBHOOK_URL"
   | "EMAIL_DELIVERY_WEBHOOK_SECRET"
+  | "RESEND_API_KEY"
 >;
 
 /** The SMTP mailbox, and the Cloudflare Email Service binding that sends when the mailbox cannot. */
@@ -52,6 +52,8 @@ export function createEmailCodeDelivery(
   bindings: EmailDeliveryBindings,
   analytics: AccountAnalytics,
 ): EmailCodeDelivery | null {
+  const atlasResend = createResendEmailCodeDelivery({apiKey:bindings.RESEND_API_KEY,from:bindings.EMAIL_FROM});
+  if (atlasResend) return atlasResend;
   const senders = readEmailSenders(bindings);
   if (senders) {
     return { send: (message) => deliver(analytics, "sign_in_code", senders, prepareEmailCode(message)) };

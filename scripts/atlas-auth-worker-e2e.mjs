@@ -22,6 +22,8 @@ const scratch = await mkdtemp(join(tmpdir(), "atlas-auth-worker-"));
 const state = join(scratch, "state");
 const configPath = join(app, "dist/server/wrangler.atlas-ci.json");
 const checks = [];
+const diagnostics = [];
+let diagnosticTail = "";
 let worker;
 let failure;
 let migrations = [];
@@ -72,13 +74,24 @@ async function request(path, { method = "GET", token, body } = {}) {
   const text = await response.text();
   return { status: response.status, body: text ? JSON.parse(text) : null };
 }
+function captureDiagnostic(chunk) {
+  diagnosticTail = (diagnosticTail + chunk.toString()).replace(/\u001b\[[0-9;]*m/g, "");
+  const lines = diagnosticTail.split("\n");
+  diagnosticTail = lines.pop().slice(-2000);
+  for (const line of lines) {
+    const d1 = /D1 call failed: (overloaded|constraint|network|other) (first|all|raw|run|batch|exec) retry=(none|succeeded|failed)/.exec(line);
+    if (d1) diagnostics.push({ subsystem: "D1", failure: d1[1], operation: d1[2], retry: d1[3] });
+    const account = /Account service request failed: auth\/[a-f0-9]+ ([A-Za-z][A-Za-z0-9]*)/.exec(line);
+    if (account) diagnostics.push({ subsystem: "account", tag: account[1] });
+  }
+}
 async function startWorker() {
   worker = spawn(process.execPath, ["x", "wrangler", "dev", "--local", "--config", configPath,
     "--persist-to", state, "--ip", "127.0.0.1", "--port", String(port)], {
     cwd: app, env: childEnv, stdio: ["ignore", "pipe", "pipe"], detached: true,
   });
-  worker.stdout.resume();
-  worker.stderr.resume();
+  worker.stdout.on("data", captureDiagnostic);
+  worker.stderr.on("data", captureDiagnostic);
   const deadline = Date.now() + 60_000;
   while (Date.now() < deadline) {
     assert.equal(worker.exitCode, null, "The local Worker stopped before readiness");
@@ -179,6 +192,9 @@ try {
   check("email challenge verifies to an account session", (await request("/v1/me", { token: owner })).status === 200);
   const devicePublicKey = randomBytes(32).toString("base64url");
   const host = { hostId: randomUUID(), fingerprint: createHash("sha256").update(devicePublicKey).digest("base64url") };
+  const jwks = await request("/.well-known/jwks.json");
+  check("JWKS publishes only the generated public key", jwks.status === 200 &&
+    jwks.body.keys.length === 1 && jwks.body.keys[0].kid === keyId && !("d" in jwks.body.keys[0]));
   const registered = await request("/v2/remote/hosts/register", {
     method: "POST", token: owner, body: {
       hostId: host.hostId, ownerMembershipId: randomUUID(), name: "Atlas CI host", devicePublicKey,
@@ -186,9 +202,6 @@ try {
   });
   check("the account registers its own host through the real route", registered.status === 201,
     { status: registered.status, code: /^[a-z0-9_]+$/.test(registered.body?.error?.code ?? "") ? registered.body.error.code : null });
-  const jwks = await request("/.well-known/jwks.json");
-  check("JWKS publishes only the generated public key", jwks.status === 200 &&
-    jwks.body.keys.length === 1 && jwks.body.keys[0].kid === keyId && !("d" in jwks.body.keys[0]));
   const hostTicket = await request("/v2/remote/hosts/" + host.hostId + "/ticket", {
     method: "POST", body: { machineToken: registered.body.machineToken },
   });
@@ -246,6 +259,7 @@ try {
   failure = error instanceof Error ? error.message : "Worker check failed";
   const detail = checks.find((item) => !item.passed)?.detail;
   if (detail) failure += " " + JSON.stringify(detail);
+  if (diagnostics.length) failure += " " + JSON.stringify(diagnostics);
 } finally {
   await stopWorker();
   await rm(configPath, { force: true });
@@ -257,7 +271,7 @@ try {
     mailDelivery: "none; disposable local development-code responses only",
     sourceSha: process.env.GITHUB_SHA ?? null,
     limitations: ["No live Resend", "No Signal/TURN", "No Android app/device", "No desktop Electron UI"],
-    migrations, checks, ...(failure ? { failure } : {}),
+    migrations, checks, diagnostics, ...(failure ? { failure } : {}),
   }, null, 2) + "\n");
   for (const item of checks) process.stdout.write((item.passed ? "PASS " : "FAIL ") + item.name + "\n");
   if (!passed) {

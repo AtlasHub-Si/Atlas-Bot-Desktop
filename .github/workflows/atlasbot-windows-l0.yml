@@ -39,9 +39,6 @@ jobs:
         run: |
           bun run typecheck:node
           bun run typecheck:renderer
-      - name: Offline local provider discovery against fake servers
-        shell: pwsh
-        run: bun run test:provider-detection
       - name: Build internal AtlasBot Windows x64 installer
         shell: pwsh
         run: bun run dist:win
@@ -83,3 +80,5 @@ jobs:
         run: bun install --frozen-lockfile --filter '!@openbot/mobile'
       - name: Validate agent save, ACP session routing and restart on Unix fake executable
         run: bun run test:custom-agents
+      - name: Validate fake local-provider discovery and credential isolation on Unix
+        run: bun run test:provider-detection

@@ -27,8 +27,6 @@ jobs:
     environment: atlasbot-windows-signing
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
-      CSC_LINK: ${{ secrets.ATLASBOT_WINDOWS_CSC_LINK }}
-      CSC_KEY_PASSWORD: ${{ secrets.ATLASBOT_WINDOWS_CSC_KEY_PASSWORD }}
       ATLASBOT_WINDOWS_SIGNER_SUBJECT: ${{ vars.ATLASBOT_WINDOWS_SIGNER_SUBJECT }}
     steps:
       - name: Checkout reviewed main
@@ -40,6 +38,8 @@ jobs:
         env:
           EXPECTED_SHA: ${{ inputs.expected_sha }}
           EXPECTED_VERSION: ${{ inputs.expected_version }}
+          CSC_LINK: ${{ secrets.ATLASBOT_WINDOWS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.ATLASBOT_WINDOWS_CSC_KEY_PASSWORD }}
         run: |
           $ErrorActionPreference = "Stop"
           if ($env:EXPECTED_SHA -cnotmatch '^[a-f0-9]{40}$') { throw "Expected SHA must be a full commit hash" }
@@ -65,6 +65,9 @@ jobs:
           python scripts/apply-atlasbot-approved-icons.py --verify-installed
       - name: Build candidate with explicit code signing
         shell: pwsh
+        env:
+          CSC_LINK: ${{ secrets.ATLASBOT_WINDOWS_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.ATLASBOT_WINDOWS_CSC_KEY_PASSWORD }}
         run: bun run dist:win
       - name: Verify Authenticode on installer and executable and create hash manifest
         shell: pwsh

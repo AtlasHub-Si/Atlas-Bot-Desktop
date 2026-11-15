@@ -99,16 +99,27 @@ async function startWorker() {
   });
   worker.stdout.on("data", captureDiagnostic);
   worker.stderr.on("data", captureDiagnostic);
-  const deadline = Date.now() + 60_000;
+  const deadline = Date.now() + 90_000;
+  let lastProbe = "not_attempted";
   while (Date.now() < deadline) {
     assert.equal(worker.exitCode, null, "The local Worker stopped before readiness");
     try {
-      if ((await request("/health/live")).status === 200) return;
-    } catch {}
-    // Poll observable health; do not infer readiness from elapsed time.
+      // Capture only HTTP status and response content type. Never retain Worker bodies,
+      // generated signing keys, bearer tokens or raw Wrangler stdout.
+      const health = await fetch(origin + "/health/live", {
+        redirect: "manual", signal: AbortSignal.timeout(5_000),
+      });
+      const type = (health.headers.get("content-type") ?? "").startsWith("application/json") ? "json" : "non_json";
+      lastProbe = "http_" + health.status + "_" + type;
+      if (health.status === 200) return;
+    } catch (error) {
+      lastProbe = error instanceof Error && ["TimeoutError", "TypeError", "AbortError"].includes(error.name)
+        ? error.name : "request_failed";
+    }
+    // Poll observed health; a slow CI runner is not itself a correctness failure.
     await delay(100);
   }
-  throw new Error("The local Worker did not become healthy");
+  throw new Error("The local Worker did not become healthy; last_probe=" + lastProbe);
 }
 async function stopWorker() {
   if (!worker || worker.exitCode !== null) return;

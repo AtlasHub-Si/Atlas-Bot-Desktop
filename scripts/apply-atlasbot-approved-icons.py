@@ -74,6 +74,7 @@ def run(root, archive):
         destinations["build/logo-colors/icon-" + color + ".png"] = PNG
     destinations["src/renderer/public/atlasbot-favicon.ico"] = ICO
     destinations["src/renderer/public/atlasbot-favicon-32.png"] = FAVICON
+    destinations["packages/brand/src/atlasbot-approved-logo.png"] = PNG
     report = {
         "scope": "internal Windows L0 build only",
         "archiveSha256": ARCHIVE_SHA256,

@@ -1,0 +1,80 @@
+name: AtlasBot approved icons internal Windows build
+
+on:
+  push:
+    branches: [fix/atlasbot-approved-icons-20261115]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atlasbot-approved-icons-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  local-first-windows:
+    runs-on: windows-2025
+    timeout-minutes: 100
+    env:
+      ATLASBOT_ENABLE_UPDATES: "0"
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - name: Checkout AtlasBot MIT source
+        uses: actions/checkout@v4
+      - name: Verify committed approved V0.7 icons
+        shell: pwsh
+        run: python scripts/apply-atlasbot-approved-icons.py --verify-installed
+      - name: Configure Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - name: Install desktop dependencies, excluding mobile
+        shell: pwsh
+        run: bun install --frozen-lockfile --filter '!@openbot/mobile'
+      - name: Check MIT licensing and isolated Atlas Windows identity
+        shell: pwsh
+        run: |
+          node scripts/check-atlas-mit-license.mjs
+          node scripts/check-atlas-windows-canary.mjs
+      - name: Typecheck Desktop and renderer
+        shell: pwsh
+        run: |
+          bun run typecheck:node
+          bun run typecheck:renderer
+      - name: Verify local-only L0 first boot without any account service
+        shell: pwsh
+        run: bun scripts/test-atlas-l0-local-auth.ts
+      - name: Build internal AtlasBot Windows x64 installer
+        shell: pwsh
+        run: bun run dist:win
+      - name: Verify unpacked Windows app
+        shell: pwsh
+        run: node scripts/verify-atlas-windows-package.mjs
+      - name: Verify packaged approved icons and capture native evidence
+        shell: pwsh
+        run: pwsh -NoProfile -File scripts/verify-atlasbot-approved-icons.ps1
+      - name: Record installer name, size and SHA-256
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem dist -File -Filter '*x64.exe' -ErrorAction SilentlyContinue)
+          if ($files.Count -ne 1) { throw "Expected exactly one x64 installer, found $($files.Count)" }
+          $hashes = @($files | Get-FileHash -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $([System.IO.Path]::GetFileName($_.Path))" })
+          $hashes | Out-File -FilePath dist/sha256.txt -Encoding utf8
+          $files | Select-Object Name, Length | Format-Table
+          Get-Content dist/sha256.txt
+      - name: Upload installer for internal local acceptance only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlasbot-windows-approved-icons-${{ github.run_number }}
+          path: |
+            dist/*x64.exe
+            dist/sha256.txt
+            .openbot-build/atlas-icons/asset-integrity.json
+            .openbot-build/atlas-icons/package-icons.json
+            .openbot-build/atlas-icons/*.png
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+

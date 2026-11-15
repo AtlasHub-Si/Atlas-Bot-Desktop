@@ -1,0 +1,110 @@
+{
+  "schema": "atlasbot.approved-icons/1.0",
+  "version": "0.7.0",
+  "approval": "DEV_APPROVED",
+  "archiveSha256": "f23e9807bb7051d1dcaa23e7e20846390f9b223b68b5e090ab8827500fb1ef43",
+  "archiveSource": "https://drive.google.com/file/d/1vPg8qi02qOTU3UpUZut9PH0DEFcBse2c/view",
+  "approvalSource": "https://github.com/AtlasHub-Si/atlas-brand-system/blob/main/studio/approved-dev/ATLASBOT_V0.7_APPROVAL.json",
+  "dimensions": {
+    "png": "512x512",
+    "favicon": "32x32",
+    "ico": "multi-resolution, approved archive bytes"
+  },
+  "assets": [
+    {
+      "path": "build/icon-production.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/icon-production.ico",
+      "source": "03_icons_desktop/atlasbot-app.ico",
+      "sha256": "b3e5b42bc68fe6af3e8ca224738b66979d7b840fcc8c1c2b2ab773833720479a"
+    },
+    {
+      "path": "build/icon-dev.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/icon-dev.ico",
+      "source": "03_icons_desktop/atlasbot-app.ico",
+      "sha256": "b3e5b42bc68fe6af3e8ca224738b66979d7b840fcc8c1c2b2ab773833720479a"
+    },
+    {
+      "path": "build/icon-preview.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/icon-preview.ico",
+      "source": "03_icons_desktop/atlasbot-app.ico",
+      "sha256": "b3e5b42bc68fe6af3e8ca224738b66979d7b840fcc8c1c2b2ab773833720479a"
+    },
+    {
+      "path": "build/icon.ico",
+      "source": "03_icons_desktop/atlasbot-app.ico",
+      "sha256": "b3e5b42bc68fe6af3e8ca224738b66979d7b840fcc8c1c2b2ab773833720479a"
+    },
+    {
+      "path": "build/logo-colors/icon-rose.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/logo-colors/icon-terracotta.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/logo-colors/icon-gold.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/logo-colors/icon-green.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/logo-colors/icon-blue.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/logo-colors/icon-pink.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/logo-colors/icon-beige.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/logo-colors/icon-gray.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "build/logo-colors/icon-white.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    },
+    {
+      "path": "src/renderer/public/atlasbot-favicon.ico",
+      "source": "03_icons_desktop/atlasbot-app.ico",
+      "sha256": "b3e5b42bc68fe6af3e8ca224738b66979d7b840fcc8c1c2b2ab773833720479a"
+    },
+    {
+      "path": "src/renderer/public/atlasbot-favicon-32.png",
+      "source": "02_favicons_web/atlasbot-favicon-32.png",
+      "sha256": "8c04d197d4e48f283a4698b808a455158664468ff7bd5824bfd519b8eb15839e"
+    },
+    {
+      "path": "packages/brand/src/atlasbot-approved-logo.png",
+      "source": "03_icons_desktop/atlasbot-app-icon-512.png",
+      "sha256": "f60d3a1c7f8ef33a480324dcbe89743e952d6819eaad3de83f258029ea31707b"
+    }
+  ]
+}

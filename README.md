@@ -726,25 +726,15 @@ popover. Release signing secrets and the complete procedure are documented in
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Before we merge a contribution, each
-author from outside the organization signs the [Contributor License Agreement](CLA.md), which
-gives Synthetify Labs a license to use the contribution. Community behavior is governed by the
-[Code of Conduct](CODE_OF_CONDUCT.md).
+See the [AtlasBot contribution guidelines](CONTRIBUTING.md) for coding standards, security rules, tests and licensing. AtlasBot contributors do **not** need to sign an upstream OpenBot Contributor License Agreement. Unless agreed otherwise, contributions submitted to this repository are offered under the repository's MIT License.
 
 ## License and attribution
 
-Copyright 2026 Synthetify Labs spółka z ograniczoną odpowiedzialnością.
+**AtlasBot source:** [MIT License](LICENSE). Copyright (c) 2026 ATLAS GLOBAL TECH LTD.
 
-Licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE). You may use, modify, and
-distribute the code for permitted noncommercial purposes. Commercial use requires a separate license
-from the copyright owner. Buy a commercial license in Settings → Billing (Starter for 1 user, or
-Team for 2 to 10 users), or contact [licenses@openbot.run](mailto:licenses@openbot.run). Versions up to and including 0.1.11 remain
-available under Apache-2.0.
-See [NOTICE](NOTICE) for attribution and third-party notices.
+The source lineage includes contributions originally developed by Synthetify Labs spółka z ograniczoną odpowiedzialnością (OpenBot); see [NOTICE](NOTICE) for its attribution and separate third-party notices. Source and runtime dependencies may carry other licenses.
 
-OpenBot is an independent source-available project and is not affiliated with, endorsed by, or
-sponsored by OpenAI. OpenAI, ChatGPT, and Codex are used only to describe compatibility with their
-respective products and services.
+AtlasBot is an independent AtlasHub.SI product and is not affiliated with, endorsed by or sponsored by OpenAI, xAI, or the original upstream developers. Product references describe technical compatibility or conceptual inspiration only.
 
 ### Shared macOS hosts
 

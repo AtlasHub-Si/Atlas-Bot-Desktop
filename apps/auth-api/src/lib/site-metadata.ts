@@ -3,28 +3,28 @@
 // resolve an `?url` specifier. That is why the font asset arrives as an argument
 // from the root route instead of as an import here.
 
-import { faqStructuredData, type LandingQuestion } from "./landing-faq";
-import { OPENBOT_ALTERNATE_DOWNLOAD_LINKS, OPENBOT_DOWNLOAD_LINKS, OPENBOT_LINKS } from "./landing-links";
+import type { LandingQuestion } from "./landing-faq";
 
-export const OPENBOT_SITE_URL = "https://openbot.run/";
-export const OPENBOT_SITE_TITLE = "OpenBot: Run a team of AI agents on your computer";
+
+export const OPENBOT_SITE_URL = "https://www.atlas-si.com/";
+export const OPENBOT_SITE_TITLE = "AtlasBot — AtlasHub.SI";
 export const OPENBOT_SITE_DESCRIPTION =
-  "A free desktop app that runs AI agents as a team on your own computer, with the ChatGPT, Claude, Gemini or Grok plan you already pay for, or your own model.";
-export const OPENBOT_SOCIAL_IMAGE_URL = `${OPENBOT_SITE_URL}openbot-social.png`;
+  "AtlasBot is an AI-agent application from ATLAS GLOBAL TECH LTD. Signed downloads and hosted services are subject to release approval.";
+export const OPENBOT_SOCIAL_IMAGE_URL = `${OPENBOT_SITE_URL}og.png`;
 /** The account `OPENBOT_LINKS.x` opens, which a shared card names. */
-export const OPENBOT_X_HANDLE = "@OpenBot_";
-const OPENBOT_X_URL = "https://x.com/OpenBot_";
-const OPENBOT_REPOSITORY_URL = "https://github.com/nightly-labs/openbot";
-const OPENBOT_PRODUCT_HUNT_URL = "https://www.producthunt.com/products/openbot-3";
-const OPENBOT_LICENSE_URL = "https://polyformproject.org/licenses/noncommercial/1.0.0/";
+export const OPENBOT_X_HANDLE = ""; // No verified official AtlasBot social account yet.
+const OPENBOT_X_URL = ""; // Not advertised until company ownership is verified.
+const OPENBOT_REPOSITORY_URL = "https://github.com/AtlasHub-Si/Atlas-Bot-Desktop";
+const OPENBOT_PRODUCT_HUNT_URL = ""; // Original operator listing, not Atlas.
+const OPENBOT_LICENSE_URL = "https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/blob/main/LICENSE";
 // One id for each entity, so that every page describes the same organization,
 // site and app, and an assistant can join what the pages say about each.
 const OPENBOT_ORGANIZATION_ID = `${OPENBOT_SITE_URL}#organization`;
 const OPENBOT_WEBSITE_ID = `${OPENBOT_SITE_URL}#website`;
 const OPENBOT_APPLICATION_ID = `${OPENBOT_SITE_URL}#app`;
 /** Square, as schema.org wants for a publisher logo. */
-export const OPENBOT_LOGO_URL = `${OPENBOT_SITE_URL}icon-512x512.png`;
-export const OPENBOT_SOCIAL_IMAGE_ALT = "Meet OpenBot on a dark grid background";
+export const OPENBOT_LOGO_URL = `${OPENBOT_SITE_URL}icon.png`;
+export const OPENBOT_SOCIAL_IMAGE_ALT = "AtlasBot — AtlasHub.SI";
 
 /** The Open Graph tags of the site's own social card, which is 1600x900. */
 export const OPENBOT_SOCIAL_IMAGE_META = [
@@ -62,13 +62,16 @@ export const OPENBOT_LEGAL_SOCIAL_IMAGE: PageSocialImage = {
  * serves the page, so a pull-request preview names an image that it has.
  */
 export function pageSocialImageMeta(image: PageSocialImage, siteUrl: string) {
-  const url = new URL(image.path, siteUrl).toString();
+  const url = OPENBOT_SOCIAL_IMAGE_URL;
+  // The legacy page art belongs to the earlier project; use the verified institutional OG.
+  void image;
+  void siteUrl;
   return {
     openGraph: [
       { property: "og:image", content: url },
-      { property: "og:image:type", content: "image/jpeg" },
-      { property: "og:image:width", content: "1600" },
-      { property: "og:image:height", content: "900" },
+      { property: "og:image:type", content: "image/png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: image.alt },
     ],
     twitter: [
@@ -80,7 +83,7 @@ export function pageSocialImageMeta(image: PageSocialImage, siteUrl: string) {
 
 // The hosts production answers on. Both serve the same pages, and those pages go by
 // openbot.run.
-const OPENBOT_PRODUCTION_HOSTS = new Set(["openbot.run", "api.openbot.run"]);
+const OPENBOT_PRODUCTION_HOSTS = new Set(["atlas-si.com", "www.atlas-si.com"]);
 
 /**
  * The site that the head tags of a page served at `pageUrl` name. Social sites fetch
@@ -106,7 +109,7 @@ export function openBotSoftwareApplication(facts: OpenBotApplicationFacts) {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "@id": OPENBOT_APPLICATION_ID,
-    name: "OpenBot",
+    name: "AtlasBot",
     url: OPENBOT_SITE_URL,
     image: OPENBOT_SOCIAL_IMAGE_URL,
     description: OPENBOT_SITE_DESCRIPTION,
@@ -118,13 +121,7 @@ export function openBotSoftwareApplication(facts: OpenBotApplicationFacts) {
       "Linux (x64 or arm64)",
     ],
     // The installers themselves: schema.org's `downloadUrl` is the file, not a page about it.
-    downloadUrl: [
-      OPENBOT_DOWNLOAD_LINKS.macos,
-      OPENBOT_ALTERNATE_DOWNLOAD_LINKS.macos,
-      OPENBOT_DOWNLOAD_LINKS.windows,
-      OPENBOT_DOWNLOAD_LINKS.linux,
-      OPENBOT_ALTERNATE_DOWNLOAD_LINKS.linux,
-    ].map((path) => new URL(path, OPENBOT_SITE_URL).toString()),
+
     // What people ask an assistant for. Keep it to what the released app does.
     featureList: [
       "Runs Codex, Claude Code, Gemini (Antigravity), Grok and OpenCode agents",
@@ -132,20 +129,13 @@ export function openBotSoftwareApplication(facts: OpenBotApplicationFacts) {
       "Any OpenAI-compatible model server, also one on your own computer",
       "Agents that work as a team and keep their workspace and history",
       "Chats, files and workspaces stay on your computer",
-      "iPhone and Android apps that connect to your own computer",
-      "Free for noncommercial use",
+      "Source repository available under AtlasBot MIT license",
     ],
-    isAccessibleForFree: true,
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-    },
     softwareVersion: facts.version,
     screenshot: facts.screenshot,
     license: OPENBOT_LICENSE_URL,
     publisher: { "@id": OPENBOT_ORGANIZATION_ID },
-    sameAs: [OPENBOT_REPOSITORY_URL, OPENBOT_PRODUCT_HUNT_URL],
+    sameAs: [OPENBOT_REPOSITORY_URL],
   } as const;
 }
 
@@ -156,27 +146,17 @@ const OPENBOT_ORGANIZATION = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": OPENBOT_ORGANIZATION_ID,
-  name: "OpenBot",
+  name: "ATLAS GLOBAL TECH LTD",
   url: OPENBOT_SITE_URL,
   logo: OPENBOT_LOGO_URL,
-  sameAs: [
-    OPENBOT_REPOSITORY_URL,
-    OPENBOT_X_URL,
-    OPENBOT_LINKS.threads,
-    OPENBOT_LINKS.linkedin,
-    OPENBOT_LINKS.reddit,
-    OPENBOT_LINKS.instagram,
-    OPENBOT_LINKS.tiktok,
-    OPENBOT_LINKS.facebook,
-    OPENBOT_PRODUCT_HUNT_URL,
-  ],
+  sameAs: [OPENBOT_REPOSITORY_URL],
 } as const;
 
 const OPENBOT_WEBSITE = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "@id": OPENBOT_WEBSITE_ID,
-  name: "OpenBot",
+  name: "AtlasBot",
   url: OPENBOT_SITE_URL,
   publisher: { "@id": OPENBOT_ORGANIZATION_ID },
 } as const;
@@ -204,7 +184,9 @@ export function openBotRootHead(interLatinFont: string) {
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: OPENBOT_SITE_TITLE },
       { name: "description", content: OPENBOT_SITE_DESCRIPTION },
-      { name: "application-name", content: "OpenBot" },
+      { name: "application-name", content: "AtlasBot" },
+      // The inherited Account API marketing/SEO surface is not the official Atlas-SI website.
+      { name: "robots", content: "noindex,nofollow" },
       { name: "color-scheme", content: "dark" },
       { name: "theme-color", content: "#1a1a1a" },
     ],
@@ -250,22 +232,20 @@ export function openBotHomeHead(application: OpenBotSoftwareApplication, siteUrl
     meta: [
       { title: page.title },
       { name: "description", content: page.description },
-      { "script:ld+json": application },
       { "script:ld+json": OPENBOT_ORGANIZATION },
       { "script:ld+json": OPENBOT_WEBSITE },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "OpenBot" },
+      { property: "og:site_name", content: "AtlasBot" },
       { property: "og:locale", content: page.openGraphLocale },
       { property: "og:url", content: url },
       { property: "og:title", content: page.title },
       { property: "og:description", content: page.description },
       ...image.openGraph,
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: OPENBOT_X_HANDLE },
       { name: "twitter:title", content: page.title },
       { name: "twitter:description", content: page.description },
       ...image.twitter,
-      { "script:ld+json": faqStructuredData(page.questions) },
+      // Original FAQ is not approved for Atlas SEO; omit inherited structured data.
     ],
     links: [
       { rel: "canonical", href: url },

@@ -13,4 +13,15 @@ assert.ok(installer.includes("AtlasBot-$version-$architecture.AppImage"), "Insta
 assert.ok(hostRelease.includes("AtlasBot-" + "$" + "{version}"), "Host release service must verify AtlasBot asset basename");
 assert.ok(!/OpenBot-\$\{version\}/.test(hostRelease), "Host release service still validates OpenBot artifacts");
 assert.ok(notice.includes("Synthetify Labs"), "Original authorship notice must remain");
-console.log("AtlasBot release source + attribution regression gate: PASS");
+assert.ok(installer.includes('echo "AtlasBot is connected to your account."'), "Installer success text must agree with AtlasBot UI");
+for (const locale of ["ar","de","en","es","fr","he","it","ja","ko","nl","pl","pt","ru","tr","zh"]) {
+  for (const name of ["server", "island"]) {
+    const strings = source("packages/i18n/src/messages/" + locale + "/" + name + ".ts");
+    assert.ok(!/\\bOpenBot\\b/.test(strings), locale + "/" + name + ": inherited brand remains visible");
+    assert.ok(!/nightly-labs\\/openbot/.test(strings), locale + "/" + name + ": source release URL remains");
+  }
+}
+const hosted = source("packages/contracts/src/hosted-servers.ts");
+assert.ok(hosted.includes("mailto:sergiomonteiro@atlashub.si"), "Hosted contact must belong to Atlas");
+assert.ok(!hosted.includes("mailto:hello@openbot.run"), "Hosted contact still routes to origin operator");
+console.log("AtlasBot release source + UI identity + contact attribution regression gate: PASS");

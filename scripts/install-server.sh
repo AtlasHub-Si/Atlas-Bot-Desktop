@@ -153,7 +153,7 @@ if [ -n "$claim" ]; then
   grep -q '^Server: \(.* (\)\{0,1\}online)\{0,1\}$' <<<"$status" ||
     fail "The server is not online. Run \"openbot status\" and \"openbot logs\" to see why."
   echo
-  echo "OpenBot is connected to your account."
+  echo "AtlasBot is connected to your account."
   exit 0
 fi
 

@@ -712,7 +712,7 @@ export const messages = {
   "server.update.path.container":
     "على مضيف Docker، اسحب صورة AtlasBot الجديدة وأنشئ الحاوية مرة أخرى بأحجام البيانات نفسها. انتظر انتهاء العمل النشط أولًا. احتفظ بالأحجام الحالية للحفاظ على بياناتك.",
   "server.update.path.manual":
-    "لا يستطيع هذا التثبيت استبدال نفسه. اطلب من مسؤول المضيف تثبيت الإصدار المتوافق من github.com/nightly-labs/openbot/releases. احتفظ ببيانات AtlasBot الحالية.",
+    "لا يستطيع هذا التثبيت استبدال نفسه. اطلب من مسؤول المضيف تثبيت الإصدار المتوافق من www.atlas-si.com. احتفظ ببيانات AtlasBot الحالية.",
   "server.update.path.unavailable": "هذا إصدار تطوير. استخدم إصدارًا مثبّتًا من AtlasBot للتحقق من وجود تحديثات.",
   "server.update.check": "التحقق من وجود تحديثات",
   "server.update.start": "التحديث عند الخمول",

@@ -16,7 +16,7 @@ import { loadSiteChrome } from "../lib/site-locale";
 import { OPENBOT_SECURITY_HEADERS, openBotRootHead } from "../lib/site-metadata";
 import type { SiteChrome } from "../lib/site-text";
 
-const NOT_FOUND_TITLE = "Page not found · OpenBot";
+const NOT_FOUND_TITLE = "Page not found · AtlasBot";
 
 export const Route = createRootRoute({
   beforeLoad: () => ({ siteUrl: servingSiteUrl(), locale: requestLocale() }),

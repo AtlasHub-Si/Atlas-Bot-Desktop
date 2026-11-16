@@ -6,6 +6,8 @@ import type { DownloadPageContent } from "../../lib/download-pages";
 // response, not a 200 with an error card. `loader` and `head` import the pages when they run, as in
 // routes/compare/$slug.tsx.
 async function loadDownloadPage(platform: string): Promise<DownloadPageContent> {
+  // An inherited store page must not advertise OpenBot mobile apps as AtlasBot releases.
+  if (platform === "ios" || platform === "android") throw notFound();
   const { DOWNLOAD_PAGE_ORDER, DOWNLOAD_PAGES } = await import("../../lib/download-pages");
   const known = DOWNLOAD_PAGE_ORDER.find((candidate) => candidate === platform);
   if (!known) throw notFound();

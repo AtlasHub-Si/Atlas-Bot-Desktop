@@ -32,7 +32,9 @@ const paths = execFileSync("git",["ls-files","-z"],{encoding:"utf8",maxBuffer:33
 const records=[],byGroup={},byKind={};const matched = new Set();
 let scanned=0,skippedBinary=0,skippedLarge=0,occurrences=0;
 for(const path of paths) {
-  let size;try{size=statSync(path).size;}catch{continue;}
+  let fileStat;try{fileStat=statSync(path);}catch{continue;}
+  if(!fileStat.isFile()) continue;
+  const size=fileStat.size;
   if(size>MAX_BYTES){skippedLarge++;continue;}
   if(binary.has(extname(path).toLowerCase())){skippedBinary++;continue;}
   const buffer=readFileSync(path);

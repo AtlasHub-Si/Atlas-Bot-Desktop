@@ -2,19 +2,20 @@ import { describe, expect, it } from "vitest";
 import { buildContentSecurityPolicy, readSelfHostedSignalOrigin } from "./content-security-policy";
 
 describe("buildContentSecurityPolicy", () => {
-  it("allows the production analytics endpoint", () => {
-    const policy = buildContentSecurityPolicy(true);
-
-    expect(policy).toContain(
-      "connect-src 'self' openbot-attachment: openbot-remote-attachment: https://analytics.openbot.run ws://127.0.0.1:* wss://*.openbot.run",
-    );
-    expect(policy.split("; ").find((directive) => directive.startsWith("connect-src "))).not.toContain("localhost");
+  it.each([true, false])("denies inherited OpenBot cloud origins when packaged=%s", (packaged) => {
+    const policy = buildContentSecurityPolicy(packaged);
+    const connect = policy.split("; ").find((directive) => directive.startsWith("connect-src "));
+    expect(connect).toContain("openbot-attachment: openbot-remote-attachment: ws://127.0.0.1:*");
+    expect(connect).not.toContain("analytics.openbot.run");
+    expect(connect).not.toContain("wss://*.openbot.run");
+    expect(policy).not.toContain("https://*.openbot.run");
+    if (packaged) expect(connect).not.toContain("localhost");
   });
 
   it.each([true, false])("allows loopback viewer frames when packaged=%s", (packaged) => {
     const directives = buildContentSecurityPolicy(packaged).split("; ");
     expect(directives.find((directive) => directive.startsWith("frame-src "))).toBe(
-      "frame-src 'self' openbot-attachment: openbot-remote-attachment: openbot-visual: openbot-remote-visual: https://*.openbot.run http://127.0.0.1:* http://localhost:*",
+      "frame-src 'self' openbot-attachment: openbot-remote-attachment: openbot-visual: openbot-remote-visual: http://127.0.0.1:* http://localhost:*",
     );
     expect(directives.find((directive) => directive.startsWith("script-src "))).toBe("script-src 'self'");
   });

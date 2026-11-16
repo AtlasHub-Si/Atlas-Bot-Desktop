@@ -654,7 +654,7 @@ export const messages = {
   "server.update.path.container":
     "במארח Docker, יש למשוך את תמונת AtlasBot החדשה וליצור את הקונטיינר מחדש עם אותם כרכי נתונים. יש להמתין קודם לסיום עבודה פעילה. יש לשמור את הכרכים הקיימים כדי לשמור על הנתונים.",
   "server.update.path.manual":
-    "ההתקנה הזו אינה יכולה להחליף את עצמה. יש לבקש ממנהל המארח להתקין את הגרסה התואמת מ-github.com/nightly-labs/openbot/releases. יש לשמור על נתוני AtlasBot הקיימים.",
+    "ההתקנה הזו אינה יכולה להחליף את עצמה. יש לבקש ממנהל המארח להתקין את הגרסה התואמת מ-www.atlas-si.com. יש לשמור על נתוני AtlasBot הקיימים.",
   "server.update.path.unavailable": "זוהי מהדורת פיתוח. יש להשתמש במהדורה מותקנת של AtlasBot כדי לבדוק עדכונים.",
   "server.update.check": "בדיקת עדכונים",
   "server.update.start": "עדכון כשאין פעילות",

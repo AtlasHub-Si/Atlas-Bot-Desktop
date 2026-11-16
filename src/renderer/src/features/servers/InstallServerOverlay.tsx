@@ -1,4 +1,4 @@
-import type { ServerClaim } from "@openbot/contracts/hosted-servers";
+import { ATLASBOT_SERVER_INSTALL_ENABLED, type ServerClaim } from "@openbot/contracts/hosted-servers";
 import type { ServerSummary } from "@openbot/contracts/ipc";
 import type { InstallServerStep } from "@openbot/ui/features/servers/InstallServerDialog";
 import { createMemo, createStore, Loading, onCleanup, onSettled, Show, untrack } from "solid-js";
@@ -57,6 +57,14 @@ function InstallServerSession(props: InstallServerOverlayProps) {
 
   /** For `onSettled` and event handlers only. */
   async function newCommand(): Promise<void> {
+    if (!ATLASBOT_SERVER_INSTALL_ENABLED) {
+      setState((draft) => {
+        draft.step = "failed";
+        draft.claim = null;
+        draft.error = new Error("AtlasBot server installation is unavailable until a signed AtlasBot release is approved.");
+      });
+      return;
+    }
     const current = ++request;
     window.clearTimeout(expiry);
     const knownIds = untrack(() => props.servers.map((server) => server.id));

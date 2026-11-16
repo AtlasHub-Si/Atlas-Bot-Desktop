@@ -5,7 +5,12 @@ on:
     paths:
       - src/**
       - apps/**
-      - packages/ui/**
+      - packages/**
+      - scripts/**
+      - docs/**
+      - build/**
+      - resources/**
+      - remote/**
       - remote/api/**
       - package.json
       - electron-builder.yml
@@ -26,12 +31,17 @@ jobs:
           persist-credentials: false
       - name: Inventory static external destinations and origin references
         run: node scripts/atlas-egress-audit.mjs
+      - name: Scan all tracked source for legacy product references
+        run: node scripts/atlas-legacy-sweep.mjs
       - name: Preserve concise audit metadata
         run: |
           cat .openbot-build/atlas-egress-audit/report.md >> "$GITHUB_STEP_SUMMARY"
+          cat .openbot-build/atlas-legacy-sweep/report.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
         with:
           name: atlasbot-static-external-destinations
-          path: .openbot-build/atlas-egress-audit
+          path: |
+            .openbot-build/atlas-egress-audit
+            .openbot-build/atlas-legacy-sweep
           if-no-files-found: error
           retention-days: 30

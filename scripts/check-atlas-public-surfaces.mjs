@@ -13,6 +13,9 @@ const installed = text("scripts/install-server.sh");
 const telemetry = text("src/main/analytics.ts");
 const telemetryPolicy = text("src/main/atlas-telemetry-url.ts");
 const credits = text("NOTICE");
+const seo = text("apps/auth-api/src/lib/site-metadata.ts");
+const siteHeader = text("apps/auth-api/src/components/brand/SiteLogoLink.tsx");
+const root = text("apps/auth-api/src/routes/__root.tsx");
 
 assert.ok(!/analytics\.openbot\.run|wss:\/\/\*\.openbot\.run|https:\/\/\*\.openbot\.run/.test(csp),
   "Atlas renderer CSP must not grant origin cloud network access");
@@ -34,5 +37,12 @@ assert.ok(!/analytics\.openbot\.run/.test(telemetry), "Host telemetry must not d
 assert.ok(telemetry.includes("atlasTelemetryEndpoint(options.apiUrl)"), "Host telemetry needs an explicit approved capture URL");
 assert.ok(telemetryPolicy.includes("atlas-si.com") && telemetryPolicy.includes("atlashub.si"), "Telemetry policy must be first-party scoped");
 assert.ok(!/nightly-labs\/openbot/.test(installed), "Installer must use Atlas-owned artifacts");
+assert.ok(seo.includes('OPENBOT_SITE_URL = "https://www.atlas-si.com/"'), "Legacy SEO still claims origin domain");
+assert.ok(!/nightly-labs\/openbot|polyformproject\.org|https:\/\/openbot\.run/.test(seo), "Inherited SEO operator/release/license remains");
+assert.ok(seo.includes('name: "robots", content: "noindex,nofollow"'), "Inherited marketing surface must not be indexed");
+assert.ok(seo.includes('"X-Robots-Tag": "noindex, nofollow"'), "Legacy metadata must include crawler header gate");
+assert.ok(!seo.includes("faqStructuredData(page.questions)"), "Unapproved historical FAQ is still published as structured data");
+assert.ok(siteHeader.includes("<span>AtlasBot</span>"), "Site header still presents origin brand");
+assert.ok(root.includes("Page not found · AtlasBot"), "Root site metadata still presents origin brand");
 assert.ok(credits.includes("Synthetify Labs"), "Required provenance notice missing");
 console.log("AtlasBot public branding, distribution, mobile and CSP static gates: PASS");

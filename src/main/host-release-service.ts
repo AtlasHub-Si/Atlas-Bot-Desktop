@@ -19,17 +19,17 @@ function releaseTarget(platform: NodeJS.Platform, arch: string): ReleaseTarget |
   if (platform === "linux")
     return {
       feed: arch === "arm64" ? "latest-linux-arm64.yml" : "latest-linux.yml",
-      asset: (version) => `OpenBot-${version}-${arch === "x64" ? "x86_64" : "arm64"}.AppImage`,
+      asset: (version) => `AtlasBot-${version}-${arch === "x64" ? "x86_64" : "arm64"}.AppImage`,
     };
   if (platform === "darwin")
     return {
       feed: "latest-mac.yml",
-      asset: (version) => `OpenBot-${version}-${arch}.zip`,
+      asset: (version) => `AtlasBot-${version}-${arch}.zip`,
     };
   if (platform === "win32" && arch === "x64")
     return {
       feed: "latest.yml",
-      asset: (version) => `OpenBot-${version}-x64.exe`,
+      asset: (version) => `AtlasBot-${version}-x64.exe`,
     };
   return null;
 }

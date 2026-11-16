@@ -102,9 +102,9 @@ export function parseHostedServerName(value: string): string | null {
   return slugifyTeamServerName(name).length >= INPUT_LIMITS.serverNameMin ? name : null;
 }
 
-const HOSTED_SERVER_CONTACT_SUBJECT = "Custom OpenBot setup";
+const HOSTED_SERVER_CONTACT_SUBJECT = "Custom AtlasBot setup";
 const HOSTED_SERVER_CONTACT_BODY = [
-  "I’d like to discuss a custom OpenBot setup for my needs. Please get in touch so we can explore the available options.",
+  "I’d like to discuss a custom AtlasBot setup for my needs. Please get in touch so we can explore the available options.",
   "",
   "Here’s some additional context:",
   "",
@@ -113,10 +113,10 @@ const HOSTED_SERVER_CONTACT_BODY = [
 
 /**
  * "Contact us" in the add server dialog, for a plan that the dialog does not have. The email opens
- * with a subject and a short message. The message is in English because the OpenBot team reads it.
+ * with a subject and a short message. The message is in English for the Atlas support team.
  * `encodeURIComponent`, not `URLSearchParams`: mail clients show a `+` as a literal plus sign.
  */
-export const HOSTED_SERVER_CONTACT_URL = `mailto:hello@openbot.run?subject=${encodeURIComponent(
+export const HOSTED_SERVER_CONTACT_URL = `mailto:sergiomonteiro@atlashub.si?subject=${encodeURIComponent(
   HOSTED_SERVER_CONTACT_SUBJECT,
 )}&body=${encodeURIComponent(HOSTED_SERVER_CONTACT_BODY)}`;
 /**
@@ -545,7 +545,10 @@ export function parseServerClaim(value: unknown): ServerClaim | null {
 
 /** The install script of a self-hosted server (`scripts/install-server.sh`, docs/self-hosted-server.md). */
 export const INSTALL_SERVER_SCRIPT_URL =
-  "https://raw.githubusercontent.com/nightly-labs/openbot/main/scripts/install-server.sh";
+  "https://raw.githubusercontent.com/AtlasHub-Si/Atlas-Bot-Desktop/main/scripts/install-server.sh";
+
+/** Fail-closed until a signed Atlas-owned server release and claim flows pass acceptance. */
+export const ATLASBOT_SERVER_INSTALL_ENABLED = false;
 
 /** A word for a POSIX shell: in single quotes, with each single quote closed, escaped and opened again. */
 function shellWord(value: string): string {
@@ -560,6 +563,8 @@ function shellWord(value: string): string {
  * and each variable that it passes (`ENV=`), and `ps` shows the arguments to each user.
  */
 export function installServerCommand(claim: string, name?: string): string {
+  if (!ATLASBOT_SERVER_INSTALL_ENABLED)
+    return "printf '%s\\n' 'AtlasBot server installation is unavailable until a signed AtlasBot release is approved.' >&2; exit 1";
   const named = name === undefined ? "" : ` -- --name ${shellWord(name)}`;
   return `{ echo OPENBOT_CLAIM=${claim}; curl -fsSL ${INSTALL_SERVER_SCRIPT_URL}; } | sudo bash -s${named}`;
 }

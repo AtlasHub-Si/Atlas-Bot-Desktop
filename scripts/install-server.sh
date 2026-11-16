@@ -1,9 +1,11 @@
 #!/bin/bash
 # Installs OpenBot as a self-hosted server on a Linux computer with no screen:
 #
-#   curl -fsSL https://raw.githubusercontent.com/nightly-labs/openbot/main/scripts/install-server.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/AtlasHub-Si/Atlas-Bot-Desktop/main/scripts/install-server.sh | sudo bash
 #
+# Atlas-owned release distribution is gated. An approved release tag is mandatory.
 # Options (after `sudo bash -s --`):
+#   --approved-tag <vX.Y.Z> Reviewed AtlasBot release tag (required; no upstream fallback).
 #   --user <name>             The user that runs OpenBot and its agents. Default: the user of the
 #                             installed server, else openbot, which the install makes when it does
 #                             not exist.
@@ -25,7 +27,8 @@
 set -euo pipefail
 export LC_ALL=C DEBIAN_FRONTEND=noninteractive
 
-RELEASES=https://github.com/nightly-labs/openbot/releases
+RELEASES=https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/releases
+approved_tag=""
 service_user=""
 auth_api_url=""
 display_size=""
@@ -45,6 +48,11 @@ fetch() {
 
 while [ "$#" -gt 0 ]; do
   case $1 in
+    --approved-tag)
+      [ "$#" -ge 2 ] || fail "Add a reviewed release tag after --approved-tag."
+      approved_tag=$2
+      shift 2
+      ;;
     --user)
       [ "$#" -ge 2 ] || fail "Add a user name after --user."
       service_user=$2
@@ -72,9 +80,11 @@ while [ "$#" -gt 0 ]; do
     *) fail "Unknown option: $1" ;;
   esac
 done
+[ -n "$approved_tag" ] || fail "AtlasBot self-hosted installation is disabled until a separately reviewed Atlas release tag is provided. No original OpenBot release will be downloaded."
+[[ $approved_tag =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail "The approved AtlasBot release tag must be vX.Y.Z."
 [ -z "$server_name" ] || [ -n "$claim" ] || fail "Give --name only with the command from the app, or run: sudo openbot login --name <name>"
 
-[ "$(uname -s)" = Linux ] || fail "This install is for Linux. Download the desktop app at https://openbot.run."
+[ "$(uname -s)" = Linux ] || fail "This install is for Linux. Download the desktop app at https://www.atlas-si.com."
 [ "$(id -u)" -eq 0 ] || fail "Run this with sudo."
 [ -d /run/systemd/system ] || fail "OpenBot needs systemd."
 command -v apt-get >/dev/null || fail "OpenBot needs Ubuntu 24.04 or a newer Ubuntu or Debian."
@@ -109,23 +119,24 @@ fi
 
 work=$(mktemp -d /var/tmp/openbot-install.XXXXXX)
 trap 'rm -rf "$work"' EXIT
-manifest=$(fetch "$RELEASES/latest/download/$manifest")
+manifest=$(fetch "$RELEASES/download/$approved_tag/$manifest")
 version=$(sed -n 's/^version: *//p' <<<"$manifest" | head -n 1)
+[ "$approved_tag" = "v$version" ] || fail "Approved AtlasBot tag and release manifest version do not match."
 path=$(sed -n 's/^path: *//p' <<<"$manifest" | head -n 1)
 sha512=$(sed -n 's/^sha512: *//p' <<<"$manifest" | head -n 1)
 [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || fail "The release manifest has no valid version."
-[ "$path" = "OpenBot-$version-$architecture.AppImage" ] || fail "The release manifest names another file."
+[ "$path" = "AtlasBot-$version-$architecture.AppImage" ] || fail "The release manifest names another file."
 [[ $sha512 =~ ^[A-Za-z0-9+/]{86}==$ ]] || fail "The release manifest has no valid SHA-512."
 
-echo "Downloading OpenBot $version..."
-fetch --output "$work/OpenBot.AppImage" "$RELEASES/download/v$version/$path"
-[ "$(openssl dgst -sha512 -binary "$work/OpenBot.AppImage" | openssl base64 -A)" = "$sha512" ] ||
+echo "Downloading AtlasBot $version..."
+fetch --output "$work/AtlasBot.AppImage" "$RELEASES/download/$approved_tag/$path"
+[ "$(openssl dgst -sha512 -binary "$work/AtlasBot.AppImage" | openssl base64 -A)" = "$sha512" ] ||
   fail "The download does not match the release manifest."
-chmod 0700 "$work/OpenBot.AppImage"
-(cd "$work" && ./OpenBot.AppImage --appimage-extract >/dev/null)
+chmod 0700 "$work/AtlasBot.AppImage"
+(cd "$work" && ./AtlasBot.AppImage --appimage-extract >/dev/null)
 
 setup="$work/squashfs-root/resources/hosting/openbot-server-setup"
-[ -f "$setup" ] || fail "OpenBot $version cannot install as a server. Try again after the next release."
+[ -f "$setup" ] || fail "AtlasBot $version cannot install as a server. Try again after the next release."
 # A release before --display-size refuses a fourth argument.
 if [ -n "$display_size" ] && ! grep -q OPENBOT_DISPLAY_SIZE "$setup"; then
   fail "OpenBot $version has no --display-size. Install without it, or try again after the next release."
@@ -142,13 +153,13 @@ if [ -n "$claim" ]; then
   grep -q '^Server: \(.* (\)\{0,1\}online)\{0,1\}$' <<<"$status" ||
     fail "The server is not online. Run \"openbot status\" and \"openbot logs\" to see why."
   echo
-  echo "OpenBot is connected to your account."
+  echo "AtlasBot is connected to your account."
   exit 0
 fi
 
 cat <<'EOF'
 
-Next, sign in with your OpenBot account:
+Next, sign in with your AtlasBot account (internal CLI name: openbot):
 
   sudo openbot login
 

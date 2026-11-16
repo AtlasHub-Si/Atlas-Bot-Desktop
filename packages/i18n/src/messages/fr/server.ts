@@ -561,7 +561,7 @@ export const messages = {
   "server.update.path.container":
     "Sur l’hôte Docker, récupérez la nouvelle image AtlasBot et recréez le conteneur avec les mêmes volumes de données. Attendez d’abord la fin du travail en cours. Conservez les volumes existants pour préserver vos données.",
   "server.update.path.manual":
-    "Cette installation ne peut pas se remplacer elle-même. Demandez à l’administrateur de l’hôte d’installer la version compatible depuis github.com/nightly-labs/openbot/releases. Conservez les données AtlasBot existantes.",
+    "Cette installation ne peut pas se remplacer elle-même. Demandez à l’administrateur de l’hôte d’installer la version compatible depuis www.atlas-si.com. Conservez les données AtlasBot existantes.",
   "server.update.path.unavailable":
     "Ceci est un build de développement. Utilisez une version installée d’AtlasBot pour rechercher des mises à jour.",
   "server.update.check": "Rechercher des mises à jour",

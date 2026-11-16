@@ -13,9 +13,7 @@ export const OPENBOT_SITE_DESCRIPTION =
 export const OPENBOT_SOCIAL_IMAGE_URL = `${OPENBOT_SITE_URL}og.png`;
 /** The account `OPENBOT_LINKS.x` opens, which a shared card names. */
 export const OPENBOT_X_HANDLE = ""; // No verified official AtlasBot social account yet.
-const OPENBOT_X_URL = ""; // Not advertised until company ownership is verified.
 const OPENBOT_REPOSITORY_URL = "https://github.com/AtlasHub-Si/Atlas-Bot-Desktop";
-const OPENBOT_PRODUCT_HUNT_URL = ""; // Original operator listing, not Atlas.
 const OPENBOT_LICENSE_URL = "https://github.com/AtlasHub-Si/Atlas-Bot-Desktop/blob/main/LICENSE";
 // One id for each entity, so that every page describes the same organization,
 // site and app, and an assistant can join what the pages say about each.
@@ -26,12 +24,12 @@ const OPENBOT_APPLICATION_ID = `${OPENBOT_SITE_URL}#app`;
 export const OPENBOT_LOGO_URL = `${OPENBOT_SITE_URL}icon.png`;
 export const OPENBOT_SOCIAL_IMAGE_ALT = "AtlasBot — AtlasHub.SI";
 
-/** The Open Graph tags of the site's own social card, which is 1600x900. */
+/** Institutional Atlas-SI Open Graph image, 1200x630. */
 export const OPENBOT_SOCIAL_IMAGE_META = [
   { property: "og:image", content: OPENBOT_SOCIAL_IMAGE_URL },
   { property: "og:image:type", content: "image/png" },
-  { property: "og:image:width", content: "1600" },
-  { property: "og:image:height", content: "900" },
+  { property: "og:image:width", content: "1200" },
+  { property: "og:image:height", content: "630" },
   { property: "og:image:alt", content: OPENBOT_SOCIAL_IMAGE_ALT },
 ] as const;
 
@@ -72,23 +70,22 @@ export function pageSocialImageMeta(image: PageSocialImage, siteUrl: string) {
       { property: "og:image:type", content: "image/png" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: image.alt },
+      { property: "og:image:alt", content: OPENBOT_SOCIAL_IMAGE_ALT },
     ],
     twitter: [
       { name: "twitter:image", content: url },
-      { name: "twitter:image:alt", content: image.alt },
+      { name: "twitter:image:alt", content: OPENBOT_SOCIAL_IMAGE_ALT },
     ],
   } as const;
 }
 
-// The hosts production answers on. Both serve the same pages, and those pages go by
-// openbot.run.
+// Atlas-SI is the canonical public brand; Account API staging is not the public website.
 const OPENBOT_PRODUCTION_HOSTS = new Set(["atlas-si.com", "www.atlas-si.com"]);
 
 /**
  * The site that the head tags of a page served at `pageUrl` name. Social sites fetch
  * `og:url` and `og:image` themselves and show no card when those answer 404. A
- * pull-request preview serves pages and images that openbot.run does not have yet,
+ * pull-request preview serves pages that are not the canonical institutional Atlas website,
  * so any host other than production names itself. Cloudflare marks preview URLs
  * `noindex`, so a preview canonical does not compete with production.
  */
@@ -167,6 +164,7 @@ export const OPENBOT_SECURITY_HEADERS = {
   "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "SAMEORIGIN",
+  "X-Robots-Tag": "noindex, nofollow", // Legacy Account API marketing is not the canonical Atlas website.
 } as const;
 
 /**
@@ -208,8 +206,8 @@ export function openBotRootHead(interLatinFont: string) {
 
 /** The home page's own social card. Other pages without a card of their own keep the site's card. */
 const OPENBOT_HOME_SOCIAL_IMAGE: PageSocialImage = {
-  path: "/social/home.jpg",
-  alt: "Models come and go. Your team stays. OpenBot agents on a paper planet",
+  path: "/og.png",
+  alt: OPENBOT_SOCIAL_IMAGE_ALT,
 };
 
 /** The text and the address of the home page in one language. */
@@ -225,25 +223,26 @@ export interface HomePageHead {
 }
 
 export function openBotHomeHead(application: OpenBotSoftwareApplication, siteUrl: string, page: HomePageHead) {
+  void application; // No release-homologated application structured data is published.
   const image = pageSocialImageMeta(OPENBOT_HOME_SOCIAL_IMAGE, siteUrl);
   const url = new URL(page.path, OPENBOT_SITE_URL).toString();
   const [fallback] = page.alternates;
   return {
     meta: [
-      { title: page.title },
-      { name: "description", content: page.description },
+      { title: OPENBOT_SITE_TITLE },
+      { name: "description", content: OPENBOT_SITE_DESCRIPTION },
       { "script:ld+json": OPENBOT_ORGANIZATION },
       { "script:ld+json": OPENBOT_WEBSITE },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "AtlasBot" },
       { property: "og:locale", content: page.openGraphLocale },
       { property: "og:url", content: url },
-      { property: "og:title", content: page.title },
-      { property: "og:description", content: page.description },
+      { property: "og:title", content: OPENBOT_SITE_TITLE },
+      { property: "og:description", content: OPENBOT_SITE_DESCRIPTION },
       ...image.openGraph,
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: page.title },
-      { name: "twitter:description", content: page.description },
+      { name: "twitter:title", content: OPENBOT_SITE_TITLE },
+      { name: "twitter:description", content: OPENBOT_SITE_DESCRIPTION },
       ...image.twitter,
       // Original FAQ is not approved for Atlas SEO; omit inherited structured data.
     ],

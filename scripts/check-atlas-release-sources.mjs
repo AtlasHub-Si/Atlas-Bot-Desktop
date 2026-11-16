@@ -17,8 +17,8 @@ assert.ok(installer.includes('echo "AtlasBot is connected to your account."'), "
 for (const locale of ["ar","de","en","es","fr","he","it","ja","ko","nl","pl","pt","ru","tr","zh"]) {
   for (const name of ["server", "island"]) {
     const strings = source("packages/i18n/src/messages/" + locale + "/" + name + ".ts");
-    assert.ok(!/\\bOpenBot\\b/.test(strings), locale + "/" + name + ": inherited brand remains visible");
-    assert.ok(!/nightly-labs\\/openbot/.test(strings), locale + "/" + name + ": source release URL remains");
+    assert.ok(!new RegExp("(^|[^A-Za-z])OpenBot($|[^A-Za-z])").test(strings), locale + "/" + name + ": inherited brand remains visible");
+    assert.ok(!strings.includes("nightly-labs/openbot"), locale + "/" + name + ": source release URL remains");
   }
 }
 const hosted = source("packages/contracts/src/hosted-servers.ts");

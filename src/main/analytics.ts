@@ -44,7 +44,24 @@ import { localDay, RESOURCE_ENUMS, RESOURCE_PROPERTY_NAMES, type ResourcePropert
 import { UNCLEAN_EXIT_ENUMS, type UncleanExitProperties } from "./run-marker";
 import { SERVICE_STEP_PROPERTY_NAMES, SERVICE_STEPS, START_KINDS, type StartupProperties } from "./startup-timing";
 
-const OPENPANEL_API_URL = "https://analytics.openbot.run/api";
+/**
+ * AtlasBot telemetry is opt-in only when a first-party HTTPS capture endpoint
+ * (or an explicit loopback diagnostic endpoint) has been configured.
+ * Do not fall back to the inherited OpenBot analytics service.
+ */
+function atlasTelemetryEndpoint(value: string | undefined): string | null {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    const firstParty = (url.hostname === "atlas-si.com" || url.hostname.endsWith(".atlas-si.com")
+      || url.hostname === "atlashub.si" || url.hostname.endsWith(".atlashub.si"));
+    const localTest = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
+    if (url.username || url.password || url.hash) return null;
+    if ((url.protocol === "https:" && firstParty) || (url.protocol === "http:" && localTest))
+      return url.toString();
+  } catch { /* malformed configuration: fail closed */ }
+  return null;
+}
 const OPENPANEL_CLIENT_ID = "6c989975-87ef-4f0c-857e-ab449a65b5c2";
 // Node fetch sends no Origin, and OpenPanel answers 401 to a client with no allowed origin or
 // secret. The SDK drops a 401 in silence. Send the renderer's origin, which the project allows.
@@ -530,12 +547,13 @@ export class HostAnalytics {
     this.#uncleanExit = options.uncleanExit ?? null;
     this.#trackingEnabled = options.trackingEnabled ?? true;
     this.#install = options.installId ? { id: options.installId, email: null } : null;
-    if (!options.enabled) {
+    const apiUrl = atlasTelemetryEndpoint(options.apiUrl);
+    if (!options.enabled || !apiUrl) {
       this.#client = null;
       return;
     }
     try {
-      const client = createClient({ apiUrl: options.apiUrl ?? OPENPANEL_API_URL, clientId: OPENPANEL_CLIENT_ID });
+      const client = createClient({ apiUrl, clientId: OPENPANEL_CLIENT_ID });
       client.setGlobalProperties({
         surface: "desktop_host",
         environment: "production",

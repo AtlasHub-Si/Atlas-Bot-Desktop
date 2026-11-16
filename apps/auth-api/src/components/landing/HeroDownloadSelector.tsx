@@ -10,7 +10,7 @@ import {
 } from "../../lib/download-platforms";
 import { EXTERNAL_LINK_REL, OPENBOT_ANDROID_APK_LINK } from "../../lib/landing-links";
 import type { LandingPageText } from "../../lib/landing-page-text";
-import { detectMobilePlatform, MOBILE_APP_ORDER, MOBILE_APPS, type MobilePlatform } from "../../lib/mobile-apps";
+import { ATLASBOT_MOBILE_DISTRIBUTION_ENABLED, detectMobilePlatform, MOBILE_APP_ORDER, MOBILE_APPS, type MobilePlatform } from "../../lib/mobile-apps";
 import { LandingIcon } from "./LandingIcon";
 import { useLandingText } from "./LandingText";
 
@@ -23,9 +23,9 @@ type HeroPlatform = DownloadPlatform | MobilePlatform | typeof ANDROID_APK;
  * The phone apps of the menu. While a version has an APK, Android is two entries, and each one
  * names its source. "Google Play" and "APK" are names, so they have no translation.
  */
-const HERO_PHONE_APPS: readonly HeroPlatform[] = ANDROID_APK_AVAILABLE
-  ? [...MOBILE_APP_ORDER, ANDROID_APK]
-  : MOBILE_APP_ORDER;
+const HERO_PHONE_APPS: readonly HeroPlatform[] = ATLASBOT_MOBILE_DISTRIBUTION_ENABLED
+  ? (ANDROID_APK_AVAILABLE ? [...MOBILE_APP_ORDER, ANDROID_APK] : MOBILE_APP_ORDER)
+  : [];
 const ANDROID_PLAY_LABEL = "Android · Google Play";
 const ANDROID_APK_LABEL = "Android · APK";
 
@@ -56,7 +56,9 @@ function heroOffer(platform: HeroPlatform, text: LandingPageText): HeroOffer {
     };
   if (platform === "ios" || platform === "android") {
     const label = platform === "android" && ANDROID_APK_AVAILABLE ? ANDROID_PLAY_LABEL : MOBILE_APPS[platform].label;
-    return { ...MOBILE_APPS[platform], ...phone[platform], label, status: available, external: true };
+    return ATLASBOT_MOBILE_DISTRIBUTION_ENABLED
+      ? { ...MOBILE_APPS[platform], ...phone[platform], label, status: available, external: true }
+      : { ...MOBILE_APPS[platform], ...phone[platform], label, status: "Coming soon", action: "AtlasBot mobile coming soon", href: undefined, external: false };
   }
   const { href, ...details } = DOWNLOAD_PLATFORMS[platform];
   // A platform that is not out yet keeps its English status: no catalog key names it.

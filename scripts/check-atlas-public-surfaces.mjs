@@ -10,6 +10,8 @@ const mobile = text("apps/auth-api/src/lib/mobile-apps.ts");
 const hero = text("apps/auth-api/src/components/landing/HeroDownloadSelector.tsx");
 const download = text("apps/auth-api/src/routes/download/$platform.tsx");
 const installed = text("scripts/install-server.sh");
+const telemetry = text("src/main/analytics.ts");
+const telemetryPolicy = text("src/main/atlas-telemetry-url.ts");
 const credits = text("NOTICE");
 
 assert.ok(!/analytics\.openbot\.run|wss:\/\/\*\.openbot\.run|https:\/\/\*\.openbot\.run/.test(csp),
@@ -28,6 +30,9 @@ assert.ok(hero.includes("ATLASBOT_MOBILE_DISTRIBUTION_ENABLED"),
   "Platform detection must not revive inherited mobile store links");
 assert.ok(download.includes('platform === "ios" || platform === "android"'),
   "Unapproved mobile download guide must fail closed");
+assert.ok(!/analytics\.openbot\.run/.test(telemetry), "Host telemetry must not default to the original operator");
+assert.ok(telemetry.includes("atlasTelemetryEndpoint(options.apiUrl)"), "Host telemetry needs an explicit approved capture URL");
+assert.ok(telemetryPolicy.includes("atlas-si.com") && telemetryPolicy.includes("atlashub.si"), "Telemetry policy must be first-party scoped");
 assert.ok(!/nightly-labs\/openbot/.test(installed), "Installer must use Atlas-owned artifacts");
 assert.ok(credits.includes("Synthetify Labs"), "Required provenance notice missing");
 console.log("AtlasBot public branding, distribution, mobile and CSP static gates: PASS");

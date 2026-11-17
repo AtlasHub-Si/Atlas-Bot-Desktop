@@ -43,6 +43,6 @@ The GWD Host can be installed **without** `bot.atlas-si.com`: it uses the Atlas 
 
 `https://bot-preview.atlas-si.com/app` is bound to the staging Worker and protected by founder-only Cloudflare Access. It is suitable for interactive founder QA after the user signs into Access. It is not public.
 
-`bot.atlas-si.com` is presently the **reserved future browser entrypoint**; its previous Caddy origin targets a removed container and returns 502. Do not restore the old Atlas Pilot bot. Switch this hostname to a validated Atlas browser Worker deployment only after WebApp UAT, branding/legal audit, cookie/API authorization and rollback proof.
+`bot.atlas-si.com` is now routed directly to the `atlasbot-auth-staging` Worker by a Cloudflare Workers Custom Domain and protected by a **founder-only Cloudflare Access application** (`AtlasBot Web RC1 Founder Pilot`). Its previous Caddy origin pointed to a removed container; that legacy backend is not restored. This is **internal Web pilot access**, not a general public release or proof of browser → Host E2E. Validate branded interface, browser OTP/cookie/API permissions, security headers, file and data channels, revocation and rollback before opening Access to additional users or approving a public Web launch.
 
 **Release decision:** Until (A)-(E) pass, keep the RC1 branch as an integration candidate, not a public production claim. Merge to main can happen after static/CI gates, but is *not equivalent* to delivering validated packages, Web access, host isolation or production service.

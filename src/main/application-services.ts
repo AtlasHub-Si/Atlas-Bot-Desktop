@@ -1222,12 +1222,15 @@ export async function createApplicationServices({
       }),
   });
   teardown.push(TEARDOWN_ORDER.agentDock, "the agent dock", () => agentDock.destroy());
-  // Limited to the deliberately isolated, unpackaged-ineligible L0 Windows evaluation
-  // profile. Never use a local identity as a cloud credential or remote host authorization.
+  // The RC1 Connected candidate uses the same AtlasBot Canary data directory and
+  // app identity as L0, but no longer fabricates a local account in connected mode.
+  // L0 remains explicitly opt-in for isolated local-only rollback/diagnostics.
+  // Never treat the synthetic local L0 identity as a cloud or remote authorization.
   const localOnlyL0 =
     app.isPackaged &&
     process.platform === "win32" &&
-    app.getPath("userData") === join(app.getPath("appData"), "AtlasBot Canary");
+    app.getPath("userData") === join(app.getPath("appData"), "AtlasBot Canary") &&
+    process.env.ATLASBOT_LOCAL_ONLY_L0 === "1";
   const centralAuthApiUrl = readCentralAuthApiUrl(
     process.env.OPENBOT_AUTH_API_URL,
     app.isPackaged ? "https://api-test.atlas-si.com" : "http://127.0.0.1:3100",

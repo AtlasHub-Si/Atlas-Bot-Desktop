@@ -34,7 +34,9 @@ export const MOBILE_APPS: Record<MobilePlatform, MobileAppDetails> = {
   },
 };
 
-export const MOBILE_APP_ORDER: readonly MobilePlatform[] = ["ios", "android"];
+/** Atlas-owned iOS/Android store builds are not released; do not advertise origin apps. */
+export const ATLASBOT_MOBILE_DISTRIBUTION_ENABLED = false;
+export const MOBILE_APP_ORDER: readonly MobilePlatform[] = ATLASBOT_MOBILE_DISTRIBUTION_ENABLED ? ["ios", "android"] : [];
 
 /**
  * The phone app for a visitor on a phone. Android reports Linux and an iPhone reports "like Mac OS X",

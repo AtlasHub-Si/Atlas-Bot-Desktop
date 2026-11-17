@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1
-# The OpenBot Docker image: the Linux release, run as a self-hosted server (docs/docker.md). The
+# AtlasBot first-party internal self-hosted image, built only from a pinned AtlasBot AppImage. The
 # release workflow builds it on a runner of each architecture, from the AppImage of that release,
 # after it checks the AppImage against the release checksums:
 #
-#   docker build --file docker/Dockerfile <folder that has OpenBot.AppImage>
+#   docker build --file docker/Dockerfile <folder that has AtlasBot.AppImage>
 #
 # The server scripts and the package list come from the unpacked release, so they always match the
 # build that they run.
@@ -11,10 +11,10 @@ ARG BASE=ubuntu:24.04@sha256:a853f94d226358a79c740cfc7bce0c289748f3fe3488d921d03
 
 FROM ${BASE} AS release
 # The static AppImage runtime unpacks itself with no system library. Unpacked, the release needs no FUSE.
-COPY OpenBot.AppImage /tmp/OpenBot.AppImage
+COPY AtlasBot.AppImage /tmp/AtlasBot.AppImage
 WORKDIR /tmp
-RUN chmod 0700 OpenBot.AppImage \
-  && ./OpenBot.AppImage --appimage-extract >/dev/null \
+RUN chmod 0700 AtlasBot.AppImage \
+  && ./AtlasBot.AppImage --appimage-extract >/dev/null \
   && chmod -R u+rwX,go=rX squashfs-root \
   && test -x squashfs-root/resources/hosting/openbot-container
 
@@ -48,9 +48,9 @@ RUN install -d -m 0755 /opt/OpenBot/hosted \
 ARG VERSION=unknown
 ARG REVISION=unknown
 # GitHub links the package to the repository through `source`.
-LABEL org.opencontainers.image.title=OpenBot \
-  org.opencontainers.image.source=https://github.com/nightly-labs/openbot \
-  org.opencontainers.image.licenses=PolyForm-Noncommercial-1.0.0 \
+LABEL org.opencontainers.image.title=AtlasBot \
+  org.opencontainers.image.source=https://github.com/AtlasHub-Si/Atlas-Bot-Desktop \
+  org.opencontainers.image.licenses=MIT \
   org.opencontainers.image.version=${VERSION} \
   org.opencontainers.image.revision=${REVISION}
 ENV LANG=C.UTF-8 XDG_RUNTIME_DIR=/run/openbot

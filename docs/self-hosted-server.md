@@ -1,5 +1,8 @@
 # Self-hosted servers
 
+> **AtlasBot distribution gate — 2026-11-16:** The historical OpenBot commands, CLI names and identifiers below are a compatibility reference, not an approved AtlasBot installer. Do not deploy the original nightly-labs release onto Atlas/GWD/customer servers. The Atlas-owned script refuses to run without a reviewed `--approved-tag vX.Y.Z` and there is no published, homologated AtlasBot server release. See [AtlasBot self-hosted readiness](atlas/SELF_HOSTED_ATLAS_READINESS.md) for prerequisites.
+
+
 A self-hosted server is the Linux OpenBot build on your own computer with no screen: a VPS, a home
 server or a cloud VM. It is a normal Remote host of your account. You use it from the desktop app,
 the iPhone app or `openbot.run/app`, as you use a [hosted server](hosted-servers.md). You install

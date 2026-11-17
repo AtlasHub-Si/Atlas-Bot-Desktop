@@ -1,0 +1,113 @@
+name: AtlasBot Linux Self-Hosted RC1 candidate (internal only)
+
+on:
+  push:
+    branches:
+      - integration/atlasbot-rc1-20261116
+    paths:
+      - '.github/workflows/atlasbot-linux-host-rc1-internal.yml'
+      - 'scripts/verify-linux-package.ts'
+      - 'electron-builder.yml'
+      - 'package.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atlasbot-linux-host-internal-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-x64-host:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      ATLASBOT_ENABLE_UPDATES: '0'
+    steps:
+      - name: Checkout candidate source (no write credentials)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure pinned Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - name: Install Linux GUI test libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends xvfb libgtk-3-0 libnss3 libasound2t64 libgbm1
+      - name: Install locked monorepo packages
+        run: bun install --frozen-lockfile --filter '!@openbot/mobile'
+      - name: Confirm Atlas ownership and release sources
+        run: |
+          node scripts/check-atlas-mit-license.mjs
+          node scripts/check-atlas-release-sources.mjs
+          node scripts/check-atlas-l0-identity.mjs
+          bash -n scripts/install-server.sh
+      - name: Build INTERNAL, unsigned Linux x64 AppImage
+        run: bun run dist:linux
+      - name: Configure root-owned SUID sandbox in disposable CI runner
+        run: |
+          test -f dist/linux-unpacked/chrome-sandbox
+          sudo chown root:root dist/linux-unpacked/chrome-sandbox
+          sudo chmod 4755 dist/linux-unpacked/chrome-sandbox
+          test "$(stat -c '%u:%g %a' dist/linux-unpacked/chrome-sandbox)" = "0:0 4755"
+      - name: Verify packaged Linux host prerequisites, Electron and start
+        run: xvfb-run -a bun run verify:package:linux
+      - name: Build isolated Atlas-owned Host Docker image from same verified AppImage
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .openbot-build/atlasbot-host-image
+          cp dist/AtlasBot-*.AppImage .openbot-build/atlasbot-host-image/AtlasBot.AppImage
+          VERSION="$(node -p 'require("./package.json").version')"
+          docker build -f docker/Dockerfile \
+            --build-arg "VERSION=$VERSION" --build-arg "REVISION=$GITHUB_SHA" \
+            --tag "atlasbot-host:rc1-internal" .openbot-build/atlasbot-host-image
+          test "$(docker image inspect atlasbot-host:rc1-internal --format '{{index .Config.Labels "org.opencontainers.image.source"}}')" = "https://github.com/AtlasHub-Si/Atlas-Bot-Desktop"
+          test "$(docker image inspect atlasbot-host:rc1-internal --format '{{index .Config.Labels "org.opencontainers.image.licenses"}}')" = "MIT"
+          docker run --rm --entrypoint /bin/bash atlasbot-host:rc1-internal -lc \
+            'test -x /opt/OpenBot/app/openbot && test -x /opt/OpenBot/app/resources/hosting/openbot-container && test -L /usr/local/bin/openbot'
+          docker image inspect atlasbot-host:rc1-internal --format '{{.Id}}'
+      - name: Emit source-pinned integrity manifest (not a signed release)
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, readdirSync, writeFileSync, statSync } from "node:fs";
+          import { createHash } from "node:crypto";
+          const version = JSON.parse(readFileSync("package.json","utf8")).version;
+          const files = readdirSync("dist").filter(n => n.startsWith("AtlasBot-"+version+"-") && n.endsWith(".AppImage"));
+          if (files.length !== 1) throw new Error("Expected exactly one AtlasBot AppImage; got "+files.join(","));
+          const filename = files[0];
+          const bytes = readFileSync("dist/"+filename);
+          const manifest = {
+            product: "AtlasBot",
+            purpose: "INTERNAL_QA_ONLY_NOT_APPROVED_FOR_PUBLIC_INSTALL",
+            platform: "linux-x64",
+            version,
+            source_repository: process.env.GITHUB_REPOSITORY,
+            source_commit: process.env.GITHUB_SHA,
+            workflow_run: process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/actions/runs/"+process.env.GITHUB_RUN_ID,
+            filename,
+            size: statSync("dist/"+filename).size,
+            sha256: createHash("sha256").update(bytes).digest("hex"),
+            sha512: createHash("sha512").update(bytes).digest("hex"),
+            signed: false,
+            approved_for_gwd_installation: false
+          };
+          writeFileSync("dist/atlasbot-linux-host-rc1-manifest.json", JSON.stringify(manifest,null,2)+"\n");
+          console.log(JSON.stringify({ filename, source_commit: manifest.source_commit, sha256: manifest.sha256, size: manifest.size }));
+          NODE
+      - name: Upload internal QA candidate, never publish Release
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlasbot-linux-host-rc1-internal-${{ github.run_id }}
+          path: |
+            dist/AtlasBot-*.AppImage
+            dist/atlasbot-linux-host-rc1-manifest.json
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0

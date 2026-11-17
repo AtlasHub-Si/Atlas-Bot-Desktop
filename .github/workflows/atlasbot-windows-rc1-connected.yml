@@ -2,7 +2,7 @@ name: AtlasBot RC1 Connected Windows internal candidate
 
 on:
   push:
-    branches: [integration/atlasbot-rc1-20261116]
+    branches: [main, integration/atlasbot-rc1-20261116]
     paths:
       - '.github/workflows/atlasbot-windows-rc1-connected.yml'
       - 'src/main/application-services.ts'
@@ -10,6 +10,7 @@ on:
       - 'scripts/check-atlas-rc1-connected.mjs'
       - 'electron-builder.yml'
       - 'package.json'
+      - 'docs/atlas/RC1_INTERNAL_BUILD_REQUEST.md'
   workflow_dispatch:
 
 permissions:

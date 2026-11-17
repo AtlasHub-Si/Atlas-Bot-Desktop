@@ -56,6 +56,21 @@ jobs:
           test "$(stat -c '%u:%g %a' dist/linux-unpacked/chrome-sandbox)" = "0:0 4755"
       - name: Verify packaged Linux host prerequisites, Electron and start
         run: xvfb-run -a bun run verify:package:linux
+      - name: Build isolated Atlas-owned Host Docker image from same verified AppImage
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .openbot-build/atlasbot-host-image
+          cp dist/AtlasBot-*.AppImage .openbot-build/atlasbot-host-image/AtlasBot.AppImage
+          VERSION="$(node -p 'require("./package.json").version')"
+          docker build -f docker/Dockerfile \
+            --build-arg "VERSION=$VERSION" --build-arg "REVISION=$GITHUB_SHA" \
+            --tag "atlasbot-host:rc1-internal" .openbot-build/atlasbot-host-image
+          test "$(docker image inspect atlasbot-host:rc1-internal --format '{{index .Config.Labels "org.opencontainers.image.source"}}')" = "https://github.com/AtlasHub-Si/Atlas-Bot-Desktop"
+          test "$(docker image inspect atlasbot-host:rc1-internal --format '{{index .Config.Labels "org.opencontainers.image.licenses"}}')" = "MIT"
+          docker run --rm --entrypoint /bin/bash atlasbot-host:rc1-internal -lc \
+            'test -x /opt/OpenBot/app/openbot && test -x /opt/OpenBot/app/resources/hosting/openbot-container && test -L /usr/local/bin/openbot'
+          docker image inspect atlasbot-host:rc1-internal --format '{{.Id}}'
       - name: Emit source-pinned integrity manifest (not a signed release)
         shell: bash
         run: |

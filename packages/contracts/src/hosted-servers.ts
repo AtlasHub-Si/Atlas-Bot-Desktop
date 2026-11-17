@@ -550,6 +550,12 @@ export const INSTALL_SERVER_SCRIPT_URL =
 /** Fail-closed until a signed Atlas-owned server release and claim flows pass acceptance. */
 export const ATLASBOT_SERVER_INSTALL_ENABLED = false;
 
+/** RC1 first-client QA: allow one-time association of an ALREADY installed first-party Host.
+ * This does not enable the unsigned automatic installation path. The API still enforces auth,
+ * one-use claims, TTL and per-account ownership; keep the claim out of logs.
+ */
+export const ATLASBOT_MANUAL_HOST_ENROLLMENT_ENABLED = true;
+
 /** A word for a POSIX shell: in single quotes, with each single quote closed, escaped and opened again. */
 function shellWord(value: string): string {
   return `'${value.replaceAll("'", "'\\''")}'`;
@@ -567,6 +573,23 @@ export function installServerCommand(claim: string, name?: string): string {
     return "printf '%s\\n' 'AtlasBot server installation is unavailable until a signed AtlasBot release is approved.' >&2; exit 1";
   const named = name === undefined ? "" : ` -- --name ${shellWord(name)}`;
   return `{ echo OPENBOT_CLAIM=${claim}; curl -fsSL ${INSTALL_SERVER_SCRIPT_URL}; } | sudo bash -s${named}`;
+}
+
+/**
+ * Manual-only RC1 association command. Run INSIDE a reviewed AtlasBot Host container
+ * or service-user shell that already has the local compatibility CLI `openbot`.
+ * It performs no downloads, no privileged installation and no upstream egress.
+ * Give the one-time claim to a trusted operator only over a private channel.
+ */
+export function enrollExistingAtlasHostCommand(claim: string): string {
+  if (!SERVER_CLAIM_PATTERN.test(claim))
+    return "printf '%s\\n' 'Invalid AtlasBot one-time host claim.' >&2; exit 1";
+  return [
+    "# AtlasBot RC1: preinstall the verified first-party Host before running this.",
+    "# Run INSIDE that Host container/service-user shell; never on an unprepared VPS.",
+    "# One-time claim. Keep this command private and do not store it in logs.",
+    `printf '%s\\n' ${shellWord(claim)} | openbot login --claim`,
+  ].join("\n");
 }
 
 const SERVER_INSTALL_ITEM_TYPE_PREFIX = "server-install:";

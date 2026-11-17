@@ -1,5 +1,5 @@
 import { AppLogo } from "@openbot/brand";
-import { installServerCommand, type ServerClaim } from "@openbot/contracts/hosted-servers";
+import { ATLASBOT_SERVER_INSTALL_ENABLED, enrollExistingAtlasHostCommand, installServerCommand, type ServerClaim } from "@openbot/contracts/hosted-servers";
 import { Button, Check, CircleAlert, Copy, Dialog, Heading, IconButton, LoaderCircle, Text, X } from "@openbot/ui";
 import { createSignal, Match, onCleanup, onSettled, Show, Switch } from "solid-js";
 import { useText } from "../../text";
@@ -50,7 +50,12 @@ export function InstallServerDialog(props: InstallServerDialogProps) {
     return () => window.clearInterval(tick);
   });
   const remaining = () => formatRemaining((props.claim?.expiresAt ?? 0) - now());
-  const command = () => (props.claim ? installServerCommand(props.claim.claim) : "");
+  const command = () =>
+    props.claim
+      ? ATLASBOT_SERVER_INSTALL_ENABLED
+        ? installServerCommand(props.claim.claim)
+        : enrollExistingAtlasHostCommand(props.claim.claim)
+      : "";
   const serverName = () => props.serverName ?? "";
   const canCopy = () => props.step === "waiting";
   const expired = () => props.step === "expired";

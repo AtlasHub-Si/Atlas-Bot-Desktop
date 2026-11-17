@@ -3,12 +3,14 @@ name: AtlasBot Linux Self-Hosted RC1 candidate (internal only)
 on:
   push:
     branches:
+      - main
       - integration/atlasbot-rc1-20261116
     paths:
       - '.github/workflows/atlasbot-linux-host-rc1-internal.yml'
       - 'scripts/verify-linux-package.ts'
       - 'electron-builder.yml'
       - 'package.json'
+      - 'docs/atlas/RC1_INTERNAL_BUILD_REQUEST.md'
   workflow_dispatch:
 
 permissions:

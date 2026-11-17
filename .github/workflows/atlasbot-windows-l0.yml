@@ -2,7 +2,7 @@ name: AtlasBot Windows L0 operational verification
 
 on:
   push:
-    branches: [test/atlasbot-local-operational-l0-20261115, integration/atlasbot-rc1-20261116]
+    branches: [test/atlasbot-local-operational-l0-20261115]
   workflow_dispatch:
 
 permissions:

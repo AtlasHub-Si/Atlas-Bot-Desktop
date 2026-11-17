@@ -26,6 +26,7 @@ jobs:
       - run: node scripts/check-atlas-public-surfaces.mjs
       - run: node scripts/check-atlas-rc1-public-links.mjs
       - run: node scripts/check-atlas-rc1-connected.mjs
+      - run: bun scripts/atlas-rc1-manual-host-enrollment.test.ts
       - run: bunx vitest run src/main/content-security-policy.test.ts src/main/atlas-telemetry-url.test.ts
       - run: bash -n scripts/install-server.sh
       - run: bun run i18n:check
@@ -47,6 +48,7 @@ jobs:
       - run: node scripts/check-atlas-staging.mjs
       - run: node scripts/check-atlas-rc1-public-links.mjs
       - run: node scripts/check-atlas-rc1-connected.mjs
+      - run: bun scripts/atlas-rc1-manual-host-enrollment.test.ts
       - run: bun run typecheck:api
       - name: Build isolated Atlas staging Worker
         working-directory: apps/auth-api

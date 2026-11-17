@@ -1,0 +1,94 @@
+name: AtlasBot RC1 Connected Windows internal candidate
+
+on:
+  push:
+    branches: [integration/atlasbot-rc1-20261116]
+    paths:
+      - '.github/workflows/atlasbot-windows-rc1-connected.yml'
+      - 'src/main/application-services.ts'
+      - 'src/main/central-auth-manager.ts'
+      - 'scripts/check-atlas-rc1-connected.mjs'
+      - 'electron-builder.yml'
+      - 'package.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atlasbot-win-rc1-connected-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  connected-windows:
+    runs-on: windows-2025
+    timeout-minutes: 120
+    env:
+      ATLASBOT_ENABLE_UPDATES: '0'
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - name: Checkout isolated RC1 candidate
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+      - name: Install frozen dependencies without mobile
+        shell: pwsh
+        run: bun install --frozen-lockfile --filter '!@openbot/mobile'
+      - name: Assert Connected default, safe L0 rollback and Atlas identity
+        shell: pwsh
+        run: |
+          node scripts/check-atlas-mit-license.mjs
+          node scripts/check-atlas-rc1-connected.mjs
+          node scripts/check-atlas-windows-canary.mjs
+          node scripts/check-atlas-public-surfaces.mjs
+      - name: Validate Desktop types and offline local identity fallback
+        shell: pwsh
+        run: |
+          bun run typecheck:node
+          bun run typecheck:renderer
+          bun scripts/test-atlas-l0-local-auth.ts
+      - name: Package INTERNAL AtlasBot RC1 Connected Windows x64
+        shell: pwsh
+        run: bun run dist:win
+      - name: Validate packaged RC1
+        shell: pwsh
+        run: node scripts/verify-atlas-windows-package.mjs
+      - name: Emit integrity and source provenance manifest
+        shell: pwsh
+        run: |
+          node --input-type=module -e '
+            import {readFileSync, readdirSync, statSync, writeFileSync} from "node:fs";
+            import {createHash} from "node:crypto";
+            const version=JSON.parse(readFileSync("package.json","utf8")).version;
+            const files=readdirSync("dist").filter(x=>x.startsWith("AtlasBot-"+version+"-") && x.endsWith("-x64.exe"));
+            if(files.length!==1)throw new Error("Exactly one AtlasBot Windows RC1 installer required: "+files);
+            const filename=files[0], data=readFileSync("dist/"+filename);
+            const manifest={
+              product:"AtlasBot", channel:"rc1-connected-internal", platform:"win32-x64", version,
+              sourceRepository:process.env.GITHUB_REPOSITORY, sourceCommit:process.env.GITHUB_SHA,
+              workflowRun:process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/actions/runs/"+process.env.GITHUB_RUN_ID,
+              filename, bytes:statSync("dist/"+filename).size,
+              sha256:createHash("sha256").update(data).digest("hex"),
+              sha512:createHash("sha512").update(data).digest("hex"),
+              signed:false, automaticUpdatesEnabled:false, userAcceptanceRequired:true,
+              publicReleaseApproved:false,
+              note:"Only install after AtlasBot Canary profile backup; do not uninstall existing OpenBot or delete profile."
+            };
+            writeFileSync("dist/atlasbot-rc1-connected-manifest.json",JSON.stringify(manifest,null,2)+"\n");
+            console.log(JSON.stringify({filename,bytes:manifest.bytes,sha256:manifest.sha256,sourceCommit:manifest.sourceCommit}));
+          '
+      - name: Upload QA-only RC1 Connected installer
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: atlasbot-windows-rc1-connected-${{ github.run_id }}
+          path: |
+            dist/AtlasBot-*-x64.exe
+            dist/atlasbot-rc1-connected-manifest.json
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0

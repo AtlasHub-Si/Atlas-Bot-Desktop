@@ -589,7 +589,7 @@ export function enrollExistingAtlasHostCommand(claim: string): string {
     "# Run INSIDE that Host container/service-user shell; never on an unprepared VPS.",
     "# One-time claim. Keep this command private and do not store it in logs.",
     `printf '%s\\n' ${shellWord(claim)} | openbot login --claim`,
-  ].join("\\n");
+  ].join("\n");
 }
 
 const SERVER_INSTALL_ITEM_TYPE_PREFIX = "server-install:";

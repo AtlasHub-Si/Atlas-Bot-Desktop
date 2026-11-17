@@ -1,4 +1,4 @@
-import { ATLASBOT_SERVER_INSTALL_ENABLED, type ServerClaim } from "@openbot/contracts/hosted-servers";
+import { ATLASBOT_MANUAL_HOST_ENROLLMENT_ENABLED, ATLASBOT_SERVER_INSTALL_ENABLED, type ServerClaim } from "@openbot/contracts/hosted-servers";
 import type { ServerSummary } from "@openbot/contracts/ipc";
 import type { InstallServerStep } from "@openbot/ui/features/servers/InstallServerDialog";
 import { createMemo, createStore, Loading, onCleanup, onSettled, Show, untrack } from "solid-js";
@@ -57,7 +57,7 @@ function InstallServerSession(props: InstallServerOverlayProps) {
 
   /** For `onSettled` and event handlers only. */
   async function newCommand(): Promise<void> {
-    if (!ATLASBOT_SERVER_INSTALL_ENABLED) {
+    if (!ATLASBOT_SERVER_INSTALL_ENABLED && !ATLASBOT_MANUAL_HOST_ENROLLMENT_ENABLED) {
       setState((draft) => {
         draft.step = "failed";
         draft.claim = null;
@@ -129,7 +129,7 @@ function InstallServerSession(props: InstallServerOverlayProps) {
       serverName={serverName()}
       error={state.error}
       onNewCommand={() => void newCommand()}
-      onSetUpWithAgent={props.onSetUpWithAgent}
+      onSetUpWithAgent={ATLASBOT_SERVER_INSTALL_ENABLED ? props.onSetUpWithAgent : undefined}
       onOpenServer={() => {
         const server = newServer();
         if (!server) return;

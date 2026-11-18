@@ -6,6 +6,8 @@ on:
     paths:
       - '.github/workflows/atlasbot-windows-rc1-connected.yml'
       - 'src/main/application-services.ts'
+      - 'src/main/content-security-policy.ts'
+      - 'src/main/content-security-policy.test.ts'
       - 'src/main/central-auth-manager.ts'
       - 'scripts/check-atlas-rc1-connected.mjs'
       - 'electron-builder.yml'

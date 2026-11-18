@@ -56,6 +56,10 @@ jobs:
           bun scripts/test-atlas-l0-local-auth.ts
       - name: Package INTERNAL AtlasBot RC1 Connected Windows x64
         shell: pwsh
+        env:
+          # Authenticated GitHub API requests for checksum-pinned public native runtime assets.
+          # Use the workflow's ephemeral read-only token; never store a user PAT.
+          GITHUB_TOKEN: ${{ github.token }}
         run: bun run dist:win
       - name: Validate packaged RC1
         shell: pwsh

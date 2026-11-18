@@ -5,6 +5,9 @@ export function buildContentSecurityPolicy(
   developmentSignalUrl?: string,
   selfHostedSignalOrigin?: string | null,
 ): string {
+  // Connected AtlasBot gets its Signal URL from the Account API only after the renderer has loaded.
+  // Allow this Atlas-owned WSS origin up front; never widen packaged CSP to arbitrary wss: URLs.
+  const atlasSignalSource = " wss://signal.atlas-si.com";
   const selfHostedSignalSource = selfHostedSignalOrigin ? ` ${selfHostedSignalOrigin}` : "";
   const developmentSources = packaged
     ? ""
@@ -20,7 +23,7 @@ export function buildContentSecurityPolicy(
     // The lightbox plays a recording from the attachment scheme, and the preview panel plays one
     // from an object URL of the bytes that the main process sent. Neither matches `default-src`.
     "media-src 'self' blob: openbot-attachment: openbot-remote-attachment:",
-    `connect-src 'self' openbot-attachment: openbot-remote-attachment: ws://127.0.0.1:*${selfHostedSignalSource}${developmentSources}`,
+    `connect-src 'self' openbot-attachment: openbot-remote-attachment: ws://127.0.0.1:*${atlasSignalSource}${selfHostedSignalSource}${developmentSources}`,
     "object-src 'none'",
     // The remote desktop viewer uses a loopback proxy in packaged apps too.
     "frame-src 'self' openbot-attachment: openbot-remote-attachment: openbot-visual: openbot-remote-visual: http://127.0.0.1:* http://localhost:*",

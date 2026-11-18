@@ -12,6 +12,26 @@ describe("buildContentSecurityPolicy", () => {
     expect(policy).not.toContain("openbot.run");
   });
 
+  it("allows only the Atlas-owned Signal origin for packaged Connected clients", () => {
+    const policy = buildContentSecurityPolicy(true);
+    const connect = policy.split("; ").find((directive) => directive.startsWith("connect-src "));
+
+    expect(connect).toContain(" wss://signal.atlas-si.com");
+    expect(connect).not.toContain(" wss: ");
+    expect(connect).not.toContain("wss://signal.openbot.run");
+    expect(connect).not.toContain("https:");
+  });
+
+  it("keeps explicit self-hosted Signal support without granting arbitrary WSS origins", () => {
+    const connect = buildContentSecurityPolicy(true, undefined, "wss://signal.example.com")
+      .split("; ")
+      .find((directive) => directive.startsWith("connect-src "));
+
+    expect(connect).toContain(" wss://signal.atlas-si.com");
+    expect(connect).toContain(" wss://signal.example.com");
+    expect(connect).not.toContain(" wss: ");
+  });
+
   it.each([true, false])("allows loopback viewer frames when packaged=%s", (packaged) => {
     const directives = buildContentSecurityPolicy(packaged).split("; ");
     expect(directives.find((directive) => directive.startsWith("frame-src "))).toBe(
